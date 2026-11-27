@@ -142,6 +142,10 @@ describe('Lot 3 : deux écrans de sortie suivent l\'opérateur', () => {
     await operateur.keyboard.press('Space');
     await attendreTexte(ecran1, /^Le patron du café/);
     assert.equal(await ecran1.evaluate(() => window.ligneSuivanteAvant.classList.contains('courante')), true);
+    // Demande du formateur : la ligne qui vient d'être chantée n'est plus affichée,
+    // même pendant le mouvement (seules la ligne à chanter et la suivante restent).
+    assert.equal(await ecran1.locator('.ligne-sortie[data-index="0"]').count(), 0, 'la ligne chantée a disparu');
+    assert.equal(await ecran1.locator('.ligne-sortie').count(), 2, 'deux lignes seulement à l\'écran');
     await operateur.keyboard.press('ArrowLeft');
     await attendreTexte(ecran1, /^Sur le quai/);
   });
@@ -174,7 +178,7 @@ describe('Lot 3 : deux écrans de sortie suivent l\'opérateur', () => {
     await attendreTexte(ecran1, /^Moi j'attends sur le banc/);
     const texte = await texteEcran(ecran1);
     assert.ok(!/tous les soirs/.test(texte), texte);
-    assert.equal(await ecran1.locator('.ligne-sortie:not(.sortante) .mot.masque').count(), 8, '4 mots masqués sur la ligne en cours, 4 sur la suivante');
+    assert.equal(await ecran1.locator('.ligne-sortie .mot.masque').count(), 8, '4 mots masqués sur la ligne en cours, 4 sur la suivante');
     assert.equal(await ecran1.textContent('.ligne-sortie.courante .mot.masque:last-child'), "_'___");
   });
 

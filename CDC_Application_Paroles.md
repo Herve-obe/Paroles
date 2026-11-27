@@ -155,7 +155,7 @@ Une ligne après le trou (facultative)
 
 - « Afficher le titre » montre le titre et l'artiste, en fondu ; un second clic (« Masquer le titre ») le retire.
 - « Commencer » : si le titre est à l'écran, il disparaît en fondu vers un écran sans paroles (intro musicale), puis « Afficher la première ligne » (ou Espace, ou Entrée) affiche la ligne 1 ; si le titre n'est pas à l'écran, la ligne 1 s'affiche directement.
-- **Défilement :** les paroles montent du bas vers le haut. Sur le prompteur, la ligne à chanter est au milieu de l'écran, la ligne suivante en dessous, plus petite et plus foncée ; dans le bandeau d'incrustation, le même mouvement a lieu à l'intérieur du bandeau. Le mouvement démarre immédiatement et dure 0,35 s par défaut (réglable, 0 = affichage sec).
+- **Défilement :** les paroles montent du bas vers le haut. Sur le prompteur, la ligne à chanter est au milieu de l'écran, la ligne suivante en dessous, plus petite et plus foncée ; dans le bandeau d'incrustation, le même mouvement a lieu à l'intérieur du bandeau. La ligne qui vient d'être chantée n'est pas affichée, même pendant le mouvement : seules la ligne à chanter et la (ou les) suivante(s) sont visibles. Le mouvement démarre immédiatement et dure 0,35 s par défaut (réglable, 0 = affichage sec).
 - « Ligne suivante » (ou Espace) lance le passage à la ligne suivante immédiatement (moins de 50 ms entre le clic et le début du mouvement). Sur une chanson chargée, « Ligne suivante » équivaut à « Commencer ». Une touche maintenue enfoncée ne répète pas l'action.
 - Avant la révélation, le défilement s'arrête à la dernière ligne du passage à trou. S'il y a des lignes après le passage à trou, « Ligne suivante » redevient disponible une fois la réponse révélée, et les affiche normalement.
 - De la saisie à la révélation, les écrans de sortie montrent toutes les lignes du passage à trou ensemble, même si le réglage est sur 1 ligne, et ne montrent plus de ligne suivante.
@@ -409,7 +409,8 @@ Retours du formateur après le premier essai du lot 3 (27 novembre 2026) :
 - le double-clic sur un écran de sortie ne sélectionne plus de texte (3.2) ;
 - après le titre, passage par un écran sans paroles (intro) avant la première ligne, avec un fondu (3.3, 5) ;
 - défilement des paroles du bas vers le haut, ligne à chanter au milieu de l'écran, ligne suivante en dessous, plus petite et plus foncée (5) ;
-- bouton « Arrêter la chanson » (3.3).
+- bouton « Arrêter la chanson » (3.3) ;
+- la ligne qui vient d'être chantée n'est plus affichée au-dessus de la ligne à chanter, même pendant le défilement (5).
 
 Précisions ajoutées pendant le lot 3 :
 

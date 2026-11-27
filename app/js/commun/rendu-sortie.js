@@ -11,7 +11,8 @@
  * - les paroles défilent du bas vers le haut : la ligne à chanter est au
  *   milieu de l'écran, la suivante en dessous, plus petite et plus foncée.
  *   Chaque ligne garde son élément d'un affichage à l'autre et glisse vers
- *   sa nouvelle place (le mouvement démarre immédiatement) ;
+ *   sa nouvelle place (le mouvement démarre immédiatement) ; la ligne qui
+ *   vient d'être chantée disparaît aussitôt ;
  * - « Noir » coupe tout, sans fondu.
  */
 (function (racine) {
@@ -27,7 +28,7 @@
    *   pas[r]     : décalage vertical de la ligne de rang r (0 = ligne à chanter)
    *   echelle[r] : taille relative (la ligne suivante est plus petite)
    *   opacite[r] : la ligne suivante est plus foncée
-   *   sortie     : position d'une ligne qui sort par le haut
+   *   sortie     : position de départ d'une ligne qui revient par le haut (retour en arrière)
    *   entree     : distance sous la dernière place d'où arrive une nouvelle ligne
    */
   const GEOMETRIE = {
@@ -152,15 +153,13 @@
     r.dernierCourant = courant;
     const affichees = new Set(a.lignes.map((l) => l.index));
 
-    // Lignes qui quittent l'écran : par le haut si on avance, par le bas si on recule.
+    // Lignes qui quittent l'écran : elles disparaissent aussitôt (demande du
+    // formateur : la ligne qui vient d'être chantée n'est plus affichée, seules
+    // la ligne à chanter et la suivante restent visibles, même pendant le mouvement).
     r.lignes.forEach((element, index) => {
       if (affichees.has(index)) return;
-      element.classList.remove('courante', 'suivante');
-      element.classList.add('sortante');
-      if (index < courant) placer(element, g.sortie, 1, 0, duree);
-      else placer(element, g.pas[dernierRang] + g.entree, g.echelle[dernierRang], 0, duree);
+      element.remove();
       r.lignes.delete(index);
-      setTimeout(() => element.remove(), duree * 1000 + 60);
     });
 
     // Lignes affichées : nouvelles (elles arrivent par le bas) ou déplacées.
@@ -181,7 +180,7 @@
         remplirLigne(element, ligne);
         ajusterTaille(element);
       }
-      element.classList.remove('sortante', 'courante', 'suivante');
+      element.classList.remove('courante', 'suivante');
       element.classList.add(rang === 0 ? 'courante' : 'suivante');
       placer(element, g.pas[place], g.echelle[place], g.opacite[place], duree);
     });
@@ -218,7 +217,7 @@
     dessinerParoles(r, a, mode, duree);
   }
 
-  /** Texte réellement visible (sans les lignes en train de sortir) : sert aux tests. */
+  /** Texte réellement visible, dans l'ordre de la chanson : sert aux tests. */
   function texteVisible(scene) {
     const r = scene.etatRendu;
     if (!r || scene.classList.contains('noir')) return '';
@@ -226,7 +225,7 @@
     if (r.titre.classList.contains('visible')) morceaux.push(r.titre.textContent);
     if (r.paroles.classList.contains('visible')) {
       // Ordre de la chanson (l'ordre dans la page peut différer après un retour en arrière).
-      Array.from(r.paroles.querySelectorAll('.ligne-sortie:not(.sortante)'))
+      Array.from(r.paroles.querySelectorAll('.ligne-sortie'))
         .sort((x, y) => Number(x.dataset.index) - Number(y.dataset.index))
         .forEach((l) => morceaux.push(l.textContent));
     }
