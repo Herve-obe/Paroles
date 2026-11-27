@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paroles : tests automatiques</title>
+  <style>
+    /* Page de résultats des tests : aucune ressource externe. */
+    :root { --fond: #f4f5f7; --texte: #1b1f24; --ok: #1f7a3a; --echec: #b3261e; --carte: #ffffff; --discret: #5b6470; }
+    @media (prefers-color-scheme: dark) {
+      :root { --fond: #15181c; --texte: #e8eaed; --ok: #5fd07f; --echec: #ff8a80; --carte: #1f242a; --discret: #9aa3ad; }
+    }
+    body { margin: 0; padding: 24px 16px; background: var(--fond); color: var(--texte); font: 16px/1.5 system-ui, "Segoe UI", sans-serif; }
+    main { max-width: 960px; margin: 0 auto; }
+    h1 { font-size: 22px; margin: 0 0 16px; }
+    #bilan { padding: 20px 24px; border-radius: 10px; font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 20px; }
+    #bilan.ok { background: var(--ok); }
+    #bilan.echec { background: var(--echec); }
+    #bilan small { display: block; font-size: 15px; font-weight: 400; opacity: .9; margin-top: 4px; }
+    ul { list-style: none; padding: 0; margin: 0; background: var(--carte); border-radius: 10px; overflow: hidden; }
+    li { padding: 8px 16px; border-bottom: 1px solid rgba(127,127,127,.2); }
+    li:last-child { border-bottom: 0; }
+    li.ok::before { content: "Réussi"; color: var(--ok); font-weight: 700; margin-right: 12px; }
+    li.echec::before { content: "ÉCHEC"; color: var(--echec); font-weight: 700; margin-right: 12px; }
+    li .message { display: block; color: var(--echec); font-family: Consolas, monospace; font-size: 14px; margin-top: 4px; }
+    p.aide { color: var(--discret); font-size: 14px; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Paroles : tests automatiques du noyau</h1>
+  <div id="bilan">Tests en cours…</div>
+  <ul id="liste"></ul>
+  <p class="aide">Les mêmes tests se lancent aussi avec la commande « npm test » (Node.js). Le test des chansons d'exemple ne tourne qu'avec cette commande, car une page ouverte par double-clic n'a pas le droit de lire les autres fichiers du dossier.</p>
+</main>
+
+<!-- Outil de test, puis les modules de l'application, dans le même ordre que index.html -->
+<script src="outil-tests.js"></script>
+<script src="../app/js/noyau/mots.js"></script>
+<script src="../app/js/noyau/comparaison.js"></script>
+<script src="../app/js/noyau/chanson.js"></script>
+<script src="../app/js/noyau/format-txt.js"></script>
+
+<!-- Les fichiers de tests -->
+<script src="unitaires/mots.test.js"></script>
+<script src="unitaires/comparaison.test.js"></script>
+<script src="unitaires/chanson.test.js"></script>
+<script src="unitaires/format-txt.test.js"></script>
+
+<script>
+  /* Affichage du bilan : les échecs en premier. */
+  (function () {
+    'use strict';
+    var resultats = window.Tests.resultats;
+    var echecs = resultats.filter(function (r) { return !r.ok; });
+    var bilan = document.getElementById('bilan');
+    var liste = document.getElementById('liste');
+
+    if (resultats.length === 0) {
+      bilan.className = 'echec';
+      bilan.textContent = 'Aucun test n\'a été exécuté : un fichier est peut-être manquant.';
+      return;
+    }
+
+    bilan.className = echecs.length ? 'echec' : 'ok';
+    bilan.innerHTML = '';
+    bilan.appendChild(document.createTextNode(
+      echecs.length ? echecs.length + ' test(s) en échec sur ' + resultats.length : 'Tous les tests passent : ' + resultats.length + ' sur ' + resultats.length
+    ));
+    var detail = document.createElement('small');
+    detail.textContent = 'Exécutés le ' + new Date().toLocaleString('fr-FR') + ' dans ' + navigator.userAgent.replace(/^.*(Edg|Chrome|Firefox)\/(\d+).*$/, '$1 $2');
+    bilan.appendChild(detail);
+
+    echecs.concat(resultats.filter(function (r) { return r.ok; })).forEach(function (r) {
+      var li = document.createElement('li');
+      li.className = r.ok ? 'ok' : 'echec';
+      li.appendChild(document.createTextNode(r.nom));
+      if (!r.ok) {
+        var m = document.createElement('span');
+        m.className = 'message';
+        m.textContent = r.message;
+        li.appendChild(m);
+      }
+      liste.appendChild(li);
+    });
+  })();
+</script>
+</body>
+</html>

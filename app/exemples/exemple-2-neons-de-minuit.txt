@@ -1,0 +1,15 @@
+# titre: Néons de minuit
+# artiste: Kassandra et les Phares
+# candidat: 2
+# categorie: 40
+# theme: Années 80
+# mode: PLAYBACK
+# note: Exemple livré avec l'application, paroles inventées. Trou sur une seule ligne, avec un mot laissé en clair au milieu.
+# faux1: on recommence tout sûrement
+# faux2: je pardonne tout enfin
+
+Les néons clignotent au-dessus du boulevard
+On danse sans savoir où la nuit nous emmène
+Le taxi nous attend, il est déjà trop tard
+Mais qu'importe l'heure, qu'importe la peine
+Ce soir [on oublie tout] et [peut-être] demain ?

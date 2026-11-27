@@ -1,0 +1,17 @@
+# titre: Le café du port
+# artiste: Les Marées Basses
+# candidat: 1
+# categorie: 20
+# theme: Chansons de bord de mer
+# mode: ORCHESTRE
+# note: Exemple livré avec l'application, paroles inventées. Trou sur deux lignes, suivi d'une ligne après le trou.
+# faux1: tous les matins d'hiver que le premier bateau
+# faux2: toutes les nuits d'automne que le petit navire
+
+Sur le quai, les mouettes se disputent le matin
+Le patron du café chante en rangeant ses verres
+On parle de la pêche, du vent, du destin
+Et chacun refait le monde entre deux mers
+Moi j'attends sur le banc [tous les soirs d'été]
+[Que le dernier ferry] me ramène à toi
+Mais le ferry s'en va, et je reste là
