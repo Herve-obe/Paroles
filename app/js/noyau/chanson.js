@@ -92,13 +92,18 @@
   /**
    * Analyse une ligne de paroles qui peut contenir des [mots à trouver].
    * @param {string} ligne
-   * @returns {{mots: Array<{texte: string, aTrouver: boolean}>, erreur: (string|null)}}
+   * @returns {{mots: Array<{texte: string, aTrouver: boolean}>, positions: Array<{debut: number, fin: number}>, erreur: (string|null)}}
+   *   positions : début et fin de chaque mot dans la ligne (utilisées par l'éditeur
+   *   pour savoir quels mots la souris a sélectionnés).
    */
   function analyserLigne(ligne) {
     const CARACTERE_DE_MOT = Paroles.mots.CARACTERE_DE_MOT;
     const LETTRE_OU_CHIFFRE = Paroles.mots.LETTRE_OU_CHIFFRE;
     const caracteres = Array.from(String(ligne).normalize('NFC'));
     const mots = [];
+    const positions = [];
+    let decalage = 0;           // position du caractère lu dans la ligne
+    let debutCourant = 0;       // position du début de l'élément en cours
 
     let courant = '';           // élément en cours de lecture
     let lettresDedans = false;  // l'élément a des lettres entre crochets
@@ -106,7 +111,7 @@
     let ouvert = false;         // un crochet « [ » est ouvert
     let groupeAvecMot = false;  // le groupe entre crochets contient une lettre
 
-    const echec = (message) => ({ mots: [], erreur: message });
+    const echec = (message) => ({ mots: [], positions: [], erreur: message });
     const milieu = (position) =>
       'crochet au milieu d\'un mot « ' + motAutour(caracteres, position) + ' » : les crochets doivent entourer des mots entiers';
 
@@ -115,13 +120,14 @@
       if (!courant) return null;
       if (lettresDedans && lettresDehors) return milieu(position - 1);
       mots.push({ texte: courant, aTrouver: lettresDedans });
+      positions.push({ debut: debutCourant, fin: decalage });
       courant = '';
       lettresDedans = false;
       lettresDehors = false;
       return null;
     }
 
-    for (let i = 0; i < caracteres.length; i += 1) {
+    for (let i = 0; i < caracteres.length; decalage += caracteres[i].length, i += 1) {
       const c = caracteres[i];
 
       if (c === '[') {
@@ -147,6 +153,7 @@
         continue;
       }
 
+      if (!courant) debutCourant = decalage;
       courant += c;
       if (LETTRE_OU_CHIFFRE.test(c)) {
         if (ouvert) {
@@ -161,7 +168,7 @@
     if (ouvert) return echec('crochet « [ » non fermé sur cette ligne (un crochet doit se fermer sur la même ligne)');
     const erreur = finirElement(caracteres.length);
     if (erreur) return echec(erreur);
-    return { mots, erreur: null };
+    return { mots, positions, erreur: null };
   }
 
   /**
