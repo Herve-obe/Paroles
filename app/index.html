@@ -14,7 +14,7 @@
 
   <!-- ============ Bandeau du haut (section 3.1) ============ -->
   <header class="bandeau">
-    <div class="bandeau-nom" id="nom-emission">Paroles</div>
+    <div class="bandeau-nom"><span id="nom-emission">Paroles</span> <span class="version" id="version" title="Version de l'application"></span></div>
     <div class="voyants" id="voyants"></div>
     <div class="bandeau-boutons">
       <button type="button" id="btn-ouvrir-ecran">Ouvrir un écran de sortie <kbd>F2</kbd></button>
@@ -100,6 +100,7 @@
 
   <!-- Scripts classiques (les modules JavaScript sont bloqués par le navigateur
        pour une page ouverte par double-clic). L'ordre compte. -->
+  <script src="js/version.js"></script>
   <script src="js/noyau/mots.js"></script>
   <script src="js/noyau/comparaison.js"></script>
   <script src="js/noyau/chanson.js"></script>

@@ -15,7 +15,8 @@ body.operateur { display: flex; flex-direction: column; height: 100vh; overflow:
   border-bottom: 1px solid var(--bord);
   flex: 0 0 auto;
 }
-.bandeau-nom { font-size: 20px; font-weight: 700; letter-spacing: .02em; min-width: 0; }
+.bandeau-nom { font-size: 20px; font-weight: 700; letter-spacing: .02em; min-width: 0; white-space: nowrap; }
+.bandeau-nom .version { font-size: 12px; font-weight: 400; color: var(--texte-3); letter-spacing: 0; }
 .voyants { display: flex; gap: 8px; flex: 1 1 auto; }
 .voyant {
   font: inherit;

@@ -4,6 +4,8 @@ Application locale qui pilote l'affichage des paroles et du jeu depuis la régie
 
 La référence est le cahier des charges : [CDC_Application_Paroles.md](CDC_Application_Paroles.md).
 
+Version 0.3.1 · Édition du 27 novembre 2026. Le numéro de version est affiché en haut à gauche de l'écran opérateur ; l'historique est dans [docs/etat-avancement.md](docs/etat-avancement.md).
+
 > **Version provisoire (lot 3 sur 7).** Disponible : la conduite, l'éditeur de chansons, l'import et l'export `.txt`, le défilement des lignes, les 2 écrans de sortie (prompteur et incrustation), « Noir ». À venir : saisie et révélation (lot 4), jokers (lot 5), préférences et sauvegarde (lot 6). **Rien n'est encore sauvegardé** : un rechargement de la page vide la conduite (la sauvegarde arrive au lot 6). Gardez vos chansons en fichiers `.txt` avec « Exporter la chanson ».
 
 ## Lancer l'application

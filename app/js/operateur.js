@@ -183,6 +183,10 @@
   });
   P.raccourcis.afficherAideMemoire(document.getElementById('aide-memoire'));
 
+  // Numéro de version, à vérifier avant tout essai (protocole de livraison).
+  document.getElementById('version').textContent = 'version ' + P.VERSION;
+  document.title = 'Paroles ' + P.VERSION + ' : écran opérateur';
+
   // Accès pour les tests automatiques de l'interface.
   P.app = app;
   app.rafraichir();

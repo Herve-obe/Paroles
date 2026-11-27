@@ -60,7 +60,8 @@ describe('Lot 2 : une chanson tapée dans l\'éditeur se déroule à l\'écran',
   before(async () => { page = await ouvrir(); });
 
   test('la page s\'ouvre sans erreur et sans aucun appel réseau', async () => {
-    assert.equal(await page.title(), 'Paroles : écran opérateur');
+    assert.match(await page.title(), /^Paroles \d+\.\d+\.\d+ : écran opérateur$/);
+    assert.match(await page.textContent('#version'), /^version \d+\.\d+\.\d+$/, 'version visible dans le bandeau');
     assert.deepEqual(page.erreurs, []);
     assert.deepEqual(page.requetesExternes, []);
     assert.equal(await texteEtape(page), 'Étape : Aucune chanson chargée');
