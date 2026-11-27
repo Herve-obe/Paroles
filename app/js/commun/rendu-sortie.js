@@ -36,6 +36,14 @@
     incrustation: { pas: [0, 84, 148, 210], echelle: [1, 0.74, 0.64, 0.58], opacite: [1, 0.58, 0.45, 0.38], sortie: -95, entree: 70 }
   };
 
+  /** Nombre de lignes montrées par un écran, selon son mode (préférences). */
+  function nombreDeLignes(prefs, mode) {
+    const n = prefs.nbLignes;
+    if (typeof n === 'number') return n;
+    if (n && n[mode]) return n[mode];
+    return mode === 'incrustation' ? 1 : 2;
+  }
+
   /* Hauteur du bandeau d'incrustation selon le nombre de lignes affichées. */
   const HAUTEUR_BANDEAU = { 1: 140, 2: 210, 3: 270 };
 
@@ -130,7 +138,7 @@
   }
 
   /** Lignes de paroles : défilement du bas vers le haut. */
-  function dessinerParoles(r, a, mode, duree) {
+  function dessinerParoles(r, a, mode, duree, nombre) {
     if (a.type !== 'paroles') {
       if (r.lignes.size || r.paroles.classList.contains('visible')) {
         r.paroles.classList.remove('visible');
@@ -148,10 +156,14 @@
     r.paroles.classList.add('visible');
     const g = GEOMETRIE[mode];
     const dernierRang = g.pas.length - 1;
-    const courant = a.lignes.length ? a.lignes[0].index : 0;
+    // Seules les lignes de ce mode d'écran (l'incrustation : la ligne à chanter seule).
+    const lignes = a.lignes.slice(0, Math.max(1, nombre));
+    // Incrustation : le bloc de lignes est centré verticalement dans le bandeau.
+    const decalage = mode === 'incrustation' ? -g.pas[lignes.length - 1] / 2 : 0;
+    const courant = lignes.length ? lignes[0].index : 0;
     const monte = r.dernierCourant === null || courant >= r.dernierCourant;
     r.dernierCourant = courant;
-    const affichees = new Set(a.lignes.map((l) => l.index));
+    const affichees = new Set(lignes.map((l) => l.index));
 
     // Lignes qui quittent l'écran : elles disparaissent aussitôt (demande du
     // formateur : la ligne qui vient d'être chantée n'est plus affichée, seules
@@ -163,7 +175,7 @@
     });
 
     // Lignes affichées : nouvelles (elles arrivent par le bas) ou déplacées.
-    a.lignes.forEach((ligne, rang) => {
+    lignes.forEach((ligne, rang) => {
       const place = Math.min(rang, dernierRang);
       let element = r.lignes.get(ligne.index);
       if (!element) {
@@ -173,7 +185,7 @@
         r.paroles.appendChild(element);
         r.lignes.set(ligne.index, element);
         ajusterTaille(element);
-        const depart = monte ? g.pas[Math.min(rang + 1, dernierRang)] + g.entree : g.sortie;
+        const depart = (monte ? g.pas[Math.min(rang + 1, dernierRang)] + g.entree : g.sortie) + decalage;
         placer(element, depart, g.echelle[place], 0, 0);
         void element.offsetWidth; // position de départ prise en compte avant le mouvement
       } else if (element.dataset.signature !== JSON.stringify(ligne.mots)) {
@@ -182,7 +194,7 @@
       }
       element.classList.remove('courante', 'suivante');
       element.classList.add(rang === 0 ? 'courante' : 'suivante');
-      placer(element, g.pas[place], g.echelle[place], g.opacite[place], duree);
+      placer(element, g.pas[place] + decalage, g.echelle[place], g.opacite[place], duree);
     });
   }
 
@@ -206,7 +218,8 @@
     scene.style.setProperty('--fond-bandeau', prefs.fondBandeau);
     scene.style.setProperty('--fondu-titre', fondu + 's');
     scene.style.setProperty('--fondu-paroles', duree + 's');
-    if (mode === 'incrustation') r.cadre.style.height = (HAUTEUR_BANDEAU[prefs.nbLignes] || HAUTEUR_BANDEAU[2]) + 'px';
+    const nombre = nombreDeLignes(prefs, mode);
+    if (mode === 'incrustation') r.cadre.style.height = (HAUTEUR_BANDEAU[nombre] || HAUTEUR_BANDEAU[1]) + 'px';
 
     // « Noir » : coupure franche, sans fondu.
     scene.classList.toggle('noir', !!a.noir);
@@ -214,7 +227,7 @@
     r.cadre.classList.toggle('visible', a.type === 'titre' || a.type === 'paroles');
 
     dessinerTitre(r, a, fondu);
-    dessinerParoles(r, a, mode, duree);
+    dessinerParoles(r, a, mode, duree, nombre);
   }
 
   /** Texte réellement visible, dans l'ordre de la chanson : sert aux tests. */

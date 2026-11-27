@@ -12,7 +12,10 @@
   function creer() {
     return {
       ecrans: [{ mode: 'prompteur' }, { mode: 'incrustation' }], // mode de l'écran de sortie 1 et 2
-      nbLignes: 2,                  // lignes affichées : 1, 2 ou 3
+      // Lignes affichées (1, 2 ou 3) selon le mode de l'écran : le prompteur
+      // montre la ligne à chanter et la suivante ; l'incrustation, la ligne
+      // à chanter seule (retour d'essai de la 0.3.1).
+      nbLignes: { prompteur: 2, incrustation: 1 },
       ligneSuivante: true,          // ligne suivante atténuée affichée
       fondIncrustation: '#000000',  // fond autour du bandeau : noir, vert ou couleur libre
       fondBandeau: '#14213d',       // fond opaque du bandeau d'incrustation (bleu nuit)

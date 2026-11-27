@@ -103,7 +103,7 @@ if (typeof require === 'function') require('../charger-noyau.js');
     test('écran 1 prompteur, écran 2 incrustation, 2 lignes, fond noir', () => {
       const p = P.preferences.creer();
       egal(p.ecrans, [{ mode: 'prompteur' }, { mode: 'incrustation' }]);
-      egal(p.nbLignes, 2);
+      egal(p.nbLignes, { prompteur: 2, incrustation: 1 }, 'incrustation : la ligne à chanter seule (retour d\'essai 0.3.1)');
       egal(p.fondIncrustation, '#000000');
       vrai(/^#[0-9a-f]{6}$/i.test(p.fondBandeau));
     });

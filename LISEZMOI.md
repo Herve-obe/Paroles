@@ -4,7 +4,7 @@ Application locale qui pilote l'affichage des paroles et du jeu depuis la régie
 
 La référence est le cahier des charges : [CDC_Application_Paroles.md](CDC_Application_Paroles.md).
 
-Version 0.3.1 · Édition du 27 novembre 2026. Le numéro de version est affiché en haut à gauche de l'écran opérateur ; l'historique est dans [docs/etat-avancement.md](docs/etat-avancement.md).
+Version 0.3.2 · Édition du 27 novembre 2026. Le numéro de version est affiché en haut à gauche de l'écran opérateur ; l'historique est dans [docs/etat-avancement.md](docs/etat-avancement.md).
 
 > **Version provisoire (lot 3 sur 7).** Disponible : la conduite, l'éditeur de chansons, l'import et l'export `.txt`, le défilement des lignes, les 2 écrans de sortie (prompteur et incrustation), « Noir ». À venir : saisie et révélation (lot 4), jokers (lot 5), préférences et sauvegarde (lot 6). **Rien n'est encore sauvegardé** : un rechargement de la page vide la conduite (la sauvegarde arrive au lot 6). Gardez vos chansons en fichiers `.txt` avec « Exporter la chanson ».
 
@@ -21,7 +21,7 @@ Version 0.3.1 · Édition du 27 novembre 2026. Le numéro de version est affich�
 3. Double-cliquez dans la fenêtre : elle passe en plein écran, sans curseur ni texte. Un second double-clic (ou Échap) en sort.
 4. Les voyants du bandeau indiquent l'état de chaque écran : gris = fermé, orange = ouvert en fenêtre, vert = ouvert en plein écran. **Un clic sur un voyant** ouvre cet écran s'il est fermé, ou le ferme (après confirmation) s'il est ouvert.
 
-Par défaut, l'écran 1 est le **prompteur** (fond noir, gros caractères) et l'écran 2 l'**incrustation** (bandeau en bas de l'image sur fond noir ; le bandeau a son propre fond opaque, donc les mots verts ne sont jamais découpés par une incrustation sur fond vert). Les réglages (mode de chaque écran, fond vert, nombre de lignes) arrivent au lot 6.
+Par défaut, l'écran 1 est le **prompteur** (fond noir, gros caractères, la ligne à chanter au milieu et la suivante en dessous) et l'écran 2 l'**incrustation** (bandeau en bas de l'image sur fond noir, avec la ligne à chanter seule, centrée dans le bandeau ; le bandeau a son propre fond opaque, donc les mots verts ne sont jamais découpés par une incrustation sur fond vert). Les réglages (mode de chaque écran, fond vert, nombre de lignes) arrivent au lot 6.
 
 - **Noir** (ou F1) vide tous les écrans de sortie : le prompteur passe au noir, l'incrustation ne garde que son fond. Un second appui réaffiche.
 - Les aperçus en bas de la zone centrale montrent en temps réel ce qu'affiche chaque écran.

@@ -118,7 +118,7 @@ describe('Lot 3 : deux écrans de sortie suivent l\'opérateur', () => {
   test('« Afficher la première ligne » : ligne 1 au milieu, ligne 2 en dessous, plus petite et plus foncée', async () => {
     await operateur.click('button[data-action="ligneSuivante"]');
     await attendreTexte(ecran1, /^Sur le quai, les mouettes se disputent le matin Le patron du café/);
-    await attendreTexte(ecran2, /^Sur le quai, les mouettes se disputent le matin Le patron du café/);
+    await attendreTexte(ecran2, /^Sur le quai, les mouettes se disputent le matin$/);
     await ecran1.waitForTimeout(500); // fin du mouvement
     const places = await ecran1.evaluate(() => {
       const echelle = document.getElementById('scene').getBoundingClientRect().height / 1080;
@@ -133,6 +133,19 @@ describe('Lot 3 : deux écrans de sortie suivent l\'opérateur', () => {
     assert.ok(places.suivante.milieu > places.courante.milieu, 'ligne suivante en dessous');
     assert.ok(places.suivante.hauteur < places.courante.hauteur, 'ligne suivante plus petite');
     assert.ok(places.suivante.opacite < 1, 'ligne suivante plus foncée');
+  });
+
+  test('incrustation : la ligne à chanter seule, centrée dans le bandeau', async () => {
+    assert.equal(await ecran2.locator('.ligne-sortie').count(), 1, 'pas de ligne suivante dans l\'incrustation');
+    assert.equal(await texteEcran(ecran2), 'Sur le quai, les mouettes se disputent le matin');
+    await ecran2.waitForTimeout(500); // fin du mouvement
+    const ecart = await ecran2.evaluate(() => {
+      const b = document.querySelector('.bandeau-incrustation').getBoundingClientRect();
+      const l = document.querySelector('.ligne-sortie.courante').getBoundingClientRect();
+      const echelle = document.getElementById('scene').getBoundingClientRect().height / 1080;
+      return ((l.top + l.height / 2) - (b.top + b.height / 2)) / echelle;
+    });
+    assert.ok(Math.abs(ecart) < 4, 'écart au centre du bandeau : ' + ecart.toFixed(1) + ' points');
   });
 
   test('défilement : la ligne suivante monte à la place de la ligne à chanter (même élément, déplacé)', async () => {

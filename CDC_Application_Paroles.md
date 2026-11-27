@@ -155,11 +155,11 @@ Une ligne après le trou (facultative)
 
 - « Afficher le titre » montre le titre et l'artiste, en fondu ; un second clic (« Masquer le titre ») le retire.
 - « Commencer » : si le titre est à l'écran, il disparaît en fondu vers un écran sans paroles (intro musicale), puis « Afficher la première ligne » (ou Espace, ou Entrée) affiche la ligne 1 ; si le titre n'est pas à l'écran, la ligne 1 s'affiche directement.
-- **Défilement :** les paroles montent du bas vers le haut. Sur le prompteur, la ligne à chanter est au milieu de l'écran, la ligne suivante en dessous, plus petite et plus foncée ; dans le bandeau d'incrustation, le même mouvement a lieu à l'intérieur du bandeau. La ligne qui vient d'être chantée n'est pas affichée, même pendant le mouvement : seules la ligne à chanter et la (ou les) suivante(s) sont visibles. Le mouvement démarre immédiatement et dure 0,35 s par défaut (réglable, 0 = affichage sec).
+- **Défilement :** les paroles montent du bas vers le haut. Sur le prompteur, la ligne à chanter est au milieu de l'écran, la ligne suivante en dessous, plus petite et plus foncée ; dans le bandeau d'incrustation, seule la ligne à chanter est affichée, centrée verticalement dans le bandeau, et la nouvelle ligne arrive par le bas. La ligne qui vient d'être chantée n'est pas affichée, même pendant le mouvement : seules la ligne à chanter et (sur le prompteur) la ligne suivante sont visibles. Le mouvement démarre immédiatement et dure 0,35 s par défaut (réglable, 0 = affichage sec).
 - « Ligne suivante » (ou Espace) lance le passage à la ligne suivante immédiatement (moins de 50 ms entre le clic et le début du mouvement). Sur une chanson chargée, « Ligne suivante » équivaut à « Commencer ». Une touche maintenue enfoncée ne répète pas l'action.
 - Avant la révélation, le défilement s'arrête à la dernière ligne du passage à trou. S'il y a des lignes après le passage à trou, « Ligne suivante » redevient disponible une fois la réponse révélée, et les affiche normalement.
 - De la saisie à la révélation, les écrans de sortie montrent toutes les lignes du passage à trou ensemble, même si le réglage est sur 1 ligne, et ne montrent plus de ligne suivante.
-- Les écrans de sortie montrent 2 lignes par défaut : la ligne en cours bien visible, la suivante atténuée (réglable à 1 ou 3 lignes).
+- Le prompteur montre 2 lignes par défaut : la ligne en cours bien visible, la suivante atténuée (réglable à 1 ou 3 lignes). L'incrustation montre la ligne en cours seule (réglable aussi).
 - « Ligne précédente » permet de corriger une erreur à tout moment.
 - Quand une ligne du passage à trou arrive, les mots à trouver sont remplacés par des `_` :
   - **un `_` par lettre** (accentuée ou non) ou par chiffre ;
@@ -267,7 +267,7 @@ Le résultat calculé est **une suggestion** : avant et pendant la révélation,
 | Éléments affichés | Activer ou désactiver chaque élément : nom de l'émission (bandeau opérateur), artiste sur l'écran titre, thème sur l'écran titre, nom du candidat sur l'écran titre, ligne suivante atténuée, textes du statut, aide-mémoire des raccourcis, aperçus des écrans de sortie | Tout activé, sauf thème et nom du candidat sur l'écran titre |
 | Jokers par candidat | Nombre de « 2 mots » et de « 3 propositions », de 0 à 5 | 1 et 1 |
 | Mode de chaque écran de sortie | Prompteur / Incrustation | Écran 1 prompteur, écran 2 incrustation |
-| Nombre de lignes affichées | 1, 2, 3 | 2 |
+| Nombre de lignes affichées, par mode d'écran | 1, 2, 3 | Prompteur : 2 ; incrustation : 1 |
 | Taille du texte | Automatique ou fixe | Automatique |
 | Fond de l'incrustation | Noir, vert, couleur libre | Noir |
 | Fond du bandeau d'incrustation | Couleur libre (opaque) | Bleu nuit |
@@ -402,6 +402,13 @@ Réponses du formateur aux questions de l'étape 1, déjà reportées dans les s
 | 27 | Livraison | Une pull request par lot, fusionnée par le formateur, puis test sur son PC (0) |
 
 Précision ajoutée pendant le lot 1 : un signe de ponctuation isolé entre deux espaces n'est pas un mot (4.3).
+
+Retours du formateur après l'essai de la version 0.3.1 (27 novembre 2026) :
+
+- validés : ouverture et fermeture des écrans par les voyants, fondu du titre, « Arrêter la chanson », fluidité des effets ;
+- prompteur conservé tel quel (la ligne chantée disparaît aussitôt) : l'effet « rouleau » envisagé pour le lot 4 est abandonné ;
+- incrustation : la ligne à chanter seule, sans la suivante, centrée verticalement dans le bandeau (5, 11) ;
+- choix de la couleur du fond d'incrustation : au lot 6, comme prévu.
 
 Retours du formateur après le premier essai du lot 3 (27 novembre 2026) :
 

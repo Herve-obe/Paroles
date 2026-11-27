@@ -63,7 +63,7 @@
 .scene[data-mode="incrustation"] { background: var(--fond-incrustation, #000000); }
 .scene .bandeau-incrustation {
   inset: auto 90px 70px 90px;
-  height: 210px;
+  height: 140px;
   /* Fond opaque du bandeau : les mots verts ne sont jamais découpés par le chroma key. */
   background: var(--fond-bandeau, #14213d);
   border-radius: 22px;
@@ -73,7 +73,8 @@
 }
 .scene .bandeau-incrustation.visible { opacity: 1; }
 .scene[data-mode="incrustation"] .calque { left: 56px; right: 56px; }
-.scene[data-mode="incrustation"] .ligne-sortie { top: 26px; font-size: 68px; line-height: 1.2; }
+/* La ligne à chanter est centrée verticalement dans le bandeau. */
+.scene[data-mode="incrustation"] .ligne-sortie { top: 50%; margin-top: -.6em; font-size: 68px; line-height: 1.2; }
 .scene[data-mode="incrustation"] .titre-sortie { gap: 6px; }
 .scene[data-mode="incrustation"] .titre { font-size: 64px; }
 .scene[data-mode="incrustation"] .artiste { font-size: 40px; color: #c9d2dc; font-weight: 400; }

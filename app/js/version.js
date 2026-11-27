@@ -7,6 +7,6 @@
 (function (racine) {
   'use strict';
   const Paroles = (racine.Paroles = racine.Paroles || {});
-  Paroles.VERSION = '0.3.1';
+  Paroles.VERSION = '0.3.2';
   Paroles.DATE_VERSION = '27 novembre 2026';
 })(typeof globalThis !== 'undefined' ? globalThis : window);

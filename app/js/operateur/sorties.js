@@ -46,7 +46,9 @@
       affichage: Paroles.affichage.calculer({
         chanson,
         jeu: app.jeu,
-        nbLignes: prefs.nbLignes,
+        // On envoie assez de lignes pour l'écran qui en montre le plus ;
+        // chaque écran ne garde que celles de son mode.
+        nbLignes: Math.max(prefs.nbLignes.prompteur, prefs.nbLignes.incrustation),
         ligneSuivante: prefs.ligneSuivante,
         noir: app.noir
       }),
