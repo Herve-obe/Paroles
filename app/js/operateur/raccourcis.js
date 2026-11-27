@@ -19,7 +19,9 @@
     { action: 'etapeSuivante', libelle: 'Étape suivante (commencer)', touches: ['Entrée'] },
     { action: 'chansonPrecedente', libelle: 'Chanson précédente', touches: ['Flèche haut'] },
     { action: 'chansonSuivante', libelle: 'Chanson suivante', touches: ['Flèche bas'] },
-    { action: 'annuler', libelle: 'Annuler la dernière action', touches: ['Ctrl+Z'] }
+    { action: 'annuler', libelle: 'Annuler la dernière action', touches: ['Ctrl+Z'] },
+    { action: 'noir', libelle: 'Noir (second appui : réaffiche)', touches: ['F1'] },
+    { action: 'ouvrirEcran', libelle: 'Ouvrir un écran de sortie', touches: ['F2'] }
   ];
 
   /* Noms en français des touches spéciales. */
@@ -38,6 +40,7 @@
 
   let table = PAR_DEFAUT;
   let executer = () => {};
+  let estBloque = () => false;
 
   /**
    * Nom de la touche ou combinaison d'un événement clavier, par exemple
@@ -84,6 +87,7 @@
    */
   function installer(p) {
     executer = p.executer;
+    if (p.estBloque) estBloque = p.estBloque;
 
     document.addEventListener('keydown', (e) => {
       if (p.avant && p.avant(e)) return;
@@ -109,6 +113,18 @@
     });
   }
 
+  /**
+   * Touche frappée sur un écran de sortie et transmise à l'écran opérateur :
+   * même effet qu'au clavier de l'écran opérateur, sauf si un dialogue ou
+   * l'éditeur est ouvert ici.
+   * @param {{key: string, ctrlKey: boolean, shiftKey: boolean, altKey: boolean, repeat: boolean}} touche
+   */
+  function toucheDistante(touche) {
+    if (estBloque() || touche.repeat) return;
+    const action = actionDe(nommer(touche));
+    if (action) executer(action);
+  }
+
   /** Remplit l'aide-mémoire avec les touches réellement actives (section 11.1). */
   function afficherAideMemoire(conteneur) {
     conteneur.textContent = '';
@@ -127,5 +143,5 @@
     });
   }
 
-  Paroles.raccourcis = { PAR_DEFAUT, nommer, actionDe, touchesDe, installer, afficherAideMemoire, estChampDeSaisie };
+  Paroles.raccourcis = { PAR_DEFAUT, nommer, actionDe, touchesDe, installer, toucheDistante, afficherAideMemoire, estChampDeSaisie };
 })(typeof globalThis !== 'undefined' ? globalThis : window);

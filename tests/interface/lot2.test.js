@@ -20,7 +20,7 @@ const EXEMPLES = path.join(RACINE, 'app', 'exemples');
 
 let navigateur;
 
-before(async () => { navigateur = await chromium.launch(); });
+before(async () => { navigateur = await chromium.launch({ channel: 'chromium' }) /* moteur complet : plein écran des fenêtres pop-up */; });
 after(async () => { await navigateur.close(); });
 
 /** Ouvre une page neuve ; mémorise les erreurs JavaScript et les requêtes réseau. */

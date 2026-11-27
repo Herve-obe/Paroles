@@ -4,13 +4,28 @@ Application locale qui pilote l'affichage des paroles et du jeu depuis la régie
 
 La référence est le cahier des charges : [CDC_Application_Paroles.md](CDC_Application_Paroles.md).
 
-> **Version provisoire (lot 2 sur 7).** Disponible : la conduite, l'éditeur de chansons, l'import et l'export `.txt`, le défilement des lignes à l'écran opérateur. À venir : écrans de sortie (lot 3), saisie et révélation (lot 4), jokers (lot 5), préférences et sauvegarde (lot 6). **Rien n'est encore sauvegardé** : un rechargement de la page vide la conduite (la sauvegarde arrive au lot 6). Gardez vos chansons en fichiers `.txt` avec « Exporter la chanson ».
+> **Version provisoire (lot 3 sur 7).** Disponible : la conduite, l'éditeur de chansons, l'import et l'export `.txt`, le défilement des lignes, les 2 écrans de sortie (prompteur et incrustation), « Noir ». À venir : saisie et révélation (lot 4), jokers (lot 5), préférences et sauvegarde (lot 6). **Rien n'est encore sauvegardé** : un rechargement de la page vide la conduite (la sauvegarde arrive au lot 6). Gardez vos chansons en fichiers `.txt` avec « Exporter la chanson ».
 
 ## Lancer l'application
 
 1. Copiez le dossier `app` où vous voulez (clé USB, bureau). Aucune installation, aucun réseau.
 2. Double-cliquez sur `app/index.html`. Il s'ouvre dans le navigateur par défaut ; s'il ne s'agit pas de Chrome ou d'Edge : clic droit sur `index.html`, « Ouvrir avec », « Google Chrome » ou « Microsoft Edge ».
 3. Mettez la fenêtre en plein écran avec F11 si vous le souhaitez.
+
+## Ouvrir les écrans de sortie
+
+1. Cliquez sur « Ouvrir un écran de sortie » (ou F2) : l'écran 1 s'ouvre dans une fenêtre. Cliquez une seconde fois pour l'écran 2.
+2. Glissez chaque fenêtre sur l'écran voulu (prompteur du candidat, entrée de la régie vidéo).
+3. Double-cliquez dans la fenêtre : elle passe en plein écran, sans curseur ni texte. Un second double-clic (ou Échap) en sort.
+4. Les voyants du bandeau indiquent l'état de chaque écran : gris = fermé, orange = ouvert en fenêtre, vert = ouvert en plein écran.
+
+Par défaut, l'écran 1 est le **prompteur** (fond noir, gros caractères) et l'écran 2 l'**incrustation** (bandeau en bas de l'image sur fond noir ; le bandeau a son propre fond opaque, donc les mots verts ne sont jamais découpés par une incrustation sur fond vert). Les réglages (mode de chaque écran, fond vert, nombre de lignes) arrivent au lot 6.
+
+- **Noir** (ou F1) vide tous les écrans de sortie : le prompteur passe au noir, l'incrustation ne garde que son fond. Un second appui réaffiche.
+- Les aperçus en bas de la zone centrale montrent en temps réel ce qu'affiche chaque écran.
+- Un écran de sortie fermé ou rechargé (F5) retrouve tout seul l'affichage en cours ; il faut seulement refaire le double-clic pour le plein écran.
+- Si l'écran de sortie a le focus (après le double-clic), ses touches agissent quand même sur l'écran opérateur : Espace fait passer à la ligne suivante.
+- Si le navigateur bloque l'ouverture de la fenêtre, autorisez les fenêtres pop-up pour cette page (icône à droite de la barre d'adresse).
 
 ## Préparer les chansons
 
@@ -42,6 +57,8 @@ Chaque raccourci a son bouton à l'écran. Les touches actives sont rappelées e
 | Commencer | Entrée |
 | Chanson précédente / suivante (hors chanson en cours) | Flèche haut / bas |
 | Annuler la dernière action | Ctrl+Z |
+| Noir (second appui : réaffiche) | F1 |
+| Ouvrir un écran de sortie | F2 |
 
 Les raccourcis ne fonctionnent pas quand on tape dans un champ (l'éditeur par exemple). Une touche maintenue enfoncée ne répète pas l'action.
 
@@ -77,6 +94,7 @@ Mais le ferry s'en va, et je reste là
 |:---|:---|
 | `app/` | L'application, à copier sur la clé USB |
 | `app/index.html` | Écran opérateur |
+| `app/sortie.html` | Écran de sortie (ouvert par l'écran opérateur, ne pas ouvrir directement) |
 | `app/exemples/` | 2 chansons d'exemple aux paroles inventées |
 | `app/polices/` | Police Atkinson Hyperlegible et sa licence (SIL OFL 1.1) |
 | `tests/` | Tests automatiques |
