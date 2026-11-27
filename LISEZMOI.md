@@ -4,28 +4,46 @@ Application locale qui pilote l'affichage des paroles et du jeu depuis la régie
 
 La référence est le cahier des charges : [CDC_Application_Paroles.md](CDC_Application_Paroles.md).
 
-> **Version provisoire (lot 1 sur 7).** À ce stade, seul le « noyau » existe : les règles de calcul (découpage en mots, `_`, comparaison, import et export `.txt`). L'écran opérateur arrive au lot 2. Ce fichier sera complété au fil des lots : lancement, écrans de sortie, déroulé d'une chanson, jokers, raccourcis.
+> **Version provisoire (lot 2 sur 7).** Disponible : la conduite, l'éditeur de chansons, l'import et l'export `.txt`, le défilement des lignes à l'écran opérateur. À venir : écrans de sortie (lot 3), saisie et révélation (lot 4), jokers (lot 5), préférences et sauvegarde (lot 6). **Rien n'est encore sauvegardé** : un rechargement de la page vide la conduite (la sauvegarde arrive au lot 6). Gardez vos chansons en fichiers `.txt` avec « Exporter la chanson ».
 
-## Contenu du dossier
+## Lancer l'application
 
-| Dossier ou fichier | Rôle |
+1. Copiez le dossier `app` où vous voulez (clé USB, bureau). Aucune installation, aucun réseau.
+2. Double-cliquez sur `app/index.html`. Il s'ouvre dans le navigateur par défaut ; s'il ne s'agit pas de Chrome ou d'Edge : clic droit sur `index.html`, « Ouvrir avec », « Google Chrome » ou « Microsoft Edge ».
+3. Mettez la fenêtre en plein écran avec F11 si vous le souhaitez.
+
+## Préparer les chansons
+
+- **Importer** : bouton « Importer .txt » (plusieurs fichiers à la fois), ou glisser-déposer des fichiers `.txt` n'importe où sur la fenêtre. Deux exemples sont fournis dans `app/exemples`.
+- **Nouvelle chanson** : remplir le formulaire, taper ou coller les paroles (une ligne de texte = une ligne à l'écran), sélectionner à la souris les mots à trouver puis cliquer sur « Marquer comme mots à trouver ». Les mots marqués apparaissent entre crochets et surlignés. « Démarquer » retire le marquage des mots sélectionnés.
+- **Fausses propositions** : l'éditeur indique le nombre de mots attendu et refuse un nombre différent.
+- **Aperçu** : montre la chanson avec les `_` à la place des mots à trouver.
+- **Exporter la chanson** : enregistre le `.txt` de la chanson sélectionnée (Chrome et Edge ouvrent une fenêtre « Enregistrer sous »).
+- **Conduite** : un clic sélectionne une chanson ; « Modifier », « Monter », « Descendre », « Supprimer » agissent sur la chanson sélectionnée.
+
+## Dérouler une chanson
+
+1. Sélectionnez la chanson et cliquez sur « Charger » (ou double-cliquez dessus). Étape : « Chanson chargée ».
+2. « Afficher le titre » (facultatif), puis « Commencer » : la ligne 1 passe à l'antenne (surlignée en jaune), la suivante est repérée en pointillés.
+3. « Ligne suivante » / « Ligne précédente » en suivant le chant. Le passage à trou est encadré en violet, les mots à trouver restent lisibles pour l'opérateur.
+4. Le défilement s'arrête à la dernière ligne du passage à trou : la suite (saisie de la proposition) arrive au lot 4.
+5. « Annuler la dernière action » revient en arrière à tout moment.
+
+Changer de chanson pendant qu'une chanson est en cours demande une confirmation.
+
+## Raccourcis clavier
+
+Chaque raccourci a son bouton à l'écran. Les touches actives sont rappelées en bas à droite de l'écran opérateur.
+
+| Action | Touche |
 |:---|:---|
-| `app/` | L'application, à copier sur la clé USB (l'écran opérateur `index.html` arrive au lot 2) |
-| `app/exemples/` | 2 chansons d'exemple aux paroles inventées |
-| `tests/` | Tests automatiques |
-| `CDC_Application_Paroles.md` | Cahier des charges |
+| Ligne suivante | Espace ou flèche droite |
+| Ligne précédente | Flèche gauche |
+| Commencer | Entrée |
+| Chanson précédente / suivante (hors chanson en cours) | Flèche haut / bas |
+| Annuler la dernière action | Ctrl+Z |
 
-## Lancer les tests
-
-**Sans rien installer (Chrome ou Edge) :** ouvre le dossier `tests` et double-clique sur `tests.html`. Le bandeau du haut doit être vert : « Tous les tests passent ».
-
-**Avec Node.js** (pour le développement, version 22 ou plus) : dans un terminal ouvert à la racine du dossier :
-
-```bash
-npm test
-```
-
-La commande lance aussi le test des chansons d'exemple, que la page `tests.html` ne peut pas faire.
+Les raccourcis ne fonctionnent pas quand on tape dans un champ (l'éditeur par exemple). Une touche maintenue enfoncée ne répète pas l'action.
 
 ## Format des fichiers `.txt`
 
@@ -52,3 +70,30 @@ Mais le ferry s'en va, et je reste là
 - Les mots à trouver sont entre crochets. Un seul passage à trou par chanson, sur une ou plusieurs lignes qui se suivent. Un crochet se ferme sur la même ligne et entoure des mots entiers.
 - `faux1` et `faux2` (pour le joker « 3 propositions ») doivent avoir exactement le même nombre de mots que le passage à trou.
 - Le détail complet est dans la section 4.2 du cahier des charges.
+
+## Contenu du dossier
+
+| Dossier ou fichier | Rôle |
+|:---|:---|
+| `app/` | L'application, à copier sur la clé USB |
+| `app/index.html` | Écran opérateur |
+| `app/exemples/` | 2 chansons d'exemple aux paroles inventées |
+| `app/polices/` | Police Atkinson Hyperlegible et sa licence (SIL OFL 1.1) |
+| `tests/` | Tests automatiques |
+| `CDC_Application_Paroles.md` | Cahier des charges |
+
+## Lancer les tests
+
+**Sans rien installer (Chrome ou Edge) :** ouvrez le dossier `tests` et double-cliquez sur `tests.html`. Le bandeau du haut doit être vert : « Tous les tests passent ».
+
+**Avec Node.js** (développement, version 22 ou plus), dans un terminal ouvert à la racine du dossier :
+
+```bash
+npm test
+```
+
+Cette commande lance les tests des règles (et celui des chansons d'exemple, que `tests.html` ne peut pas faire). Les tests de l'interface, qui pilotent un vrai navigateur, demandent en plus Playwright :
+
+```bash
+npm run test:interface
+```
