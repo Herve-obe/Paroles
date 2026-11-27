@@ -1,0 +1,215 @@
+/*
+ * Écran opérateur (section 3.1) : bandeau du haut, puis trois zones
+ * (conduite à gauche, chanson en cours au centre, pilotage à droite).
+ * Prévu pour 1920 × 1080 et utilisable dès 1366 × 768.
+ */
+body.operateur { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+/* ---------- Bandeau du haut ---------- */
+.bandeau {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+  background: var(--panneau);
+  border-bottom: 1px solid var(--bord);
+  flex: 0 0 auto;
+}
+.bandeau-nom { font-size: 20px; font-weight: 700; letter-spacing: .02em; min-width: 0; }
+.voyants { display: flex; gap: 8px; flex: 1 1 auto; }
+.voyant {
+  font-size: 13px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  border: 1px solid var(--bord);
+  color: var(--texte-3);
+}
+.voyant::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--texte-3); margin-right: 6px; }
+.bandeau-boutons { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* ---------- Trois zones ---------- */
+.zones {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(290px, 23%) minmax(0, 1fr) minmax(330px, 25%);
+}
+.zone { min-height: 0; display: flex; flex-direction: column; border-right: 1px solid var(--bord); overflow: hidden; }
+.zone:last-child { border-right: 0; }
+.zone-entete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px 8px;
+  flex: 0 0 auto;
+}
+.zone-entete h2 { font-size: 17px; }
+
+/* ---------- Conduite ---------- */
+.barre-outils { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px; border-bottom: 1px solid var(--bord); }
+.barre-outils button { padding: 5px 9px; font-size: 14px; }
+.liste-conduite { list-style: none; margin: 0; padding: 8px; overflow-y: auto; flex: 1 1 auto; counter-reset: conduite; }
+.liste-conduite li {
+  counter-increment: conduite;
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  gap: 2px 8px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--rayon);
+  cursor: pointer;
+  user-select: none;
+}
+.liste-conduite li::before { content: counter(conduite); grid-row: 1 / span 2; color: var(--texte-3); font-weight: 700; }
+.liste-conduite li:hover { background: var(--panneau-2); }
+.liste-conduite li.selectionnee { background: var(--selection-fond); border-color: var(--selection); }
+.liste-conduite li.chargee { box-shadow: inset 4px 0 0 var(--antenne); }
+.conduite-titre { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.conduite-details { grid-column: 2 / span 2; font-size: 13px; color: var(--texte-2); }
+.etat { font-size: 12px; padding: 1px 8px; border-radius: 99px; border: 1px solid var(--bord); color: var(--texte-2); align-self: start; }
+.etat-en_cours { color: var(--antenne); border-color: var(--antenne); }
+.etat-jouee { color: var(--ok); border-color: var(--ok); }
+.liste-vide { color: var(--texte-2); padding: 16px 10px; font-size: 14px; }
+.aide-depot { margin: 0; padding: 8px 14px 12px; font-size: 12px; color: var(--texte-3); border-top: 1px solid var(--bord); }
+
+/* ---------- Chanson en cours ---------- */
+.zone-chanson { background: #12171c; }
+.entete-infos { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.entete-infos .discret span + span::before { content: " · "; }
+.badge-mode { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: var(--panneau-3); color: var(--texte-2); white-space: nowrap; }
+.lignes-chanson { flex: 1 1 auto; overflow-y: auto; padding: 6px 18px 40vh; font-size: 22px; }
+.ligne-op {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: var(--rayon);
+  border: 2px solid transparent;
+  line-height: 1.35;
+}
+.ligne-op .numero { font-size: 13px; color: var(--texte-3); text-align: right; }
+.ligne-op .ligne-paroles { white-space: normal; }
+.ligne-op .repere { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.ligne-op.passee { color: var(--texte-3); }
+.ligne-op.antenne { background: var(--antenne-fond); border-color: var(--antenne); }
+.ligne-op.antenne .repere { color: var(--antenne); }
+.ligne-op.suivante { border-color: var(--bord); border-style: dashed; }
+.ligne-op.suivante .repere { color: var(--texte-2); }
+.ligne-op.apres-trou { opacity: .55; }
+.ligne-op .mot.a-trouver { color: var(--trou); text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 4px; }
+.cadre-trou { border: 2px solid var(--trou); border-radius: 10px; margin: 8px 0; padding: 2px; background: rgba(195, 155, 255, .05); }
+.cadre-trou-titre { font-size: 12px; font-weight: 700; color: var(--trou); text-transform: uppercase; letter-spacing: .05em; padding: 2px 10px; }
+.message-centre { color: var(--texte-2); font-size: 17px; padding: 40px 10px; text-align: center; }
+.titre-antenne { margin: 6px 0 10px; padding: 10px 14px; border: 2px solid var(--antenne); border-radius: var(--rayon); background: var(--antenne-fond); font-size: 18px; }
+.titre-antenne strong { color: var(--antenne); text-transform: uppercase; font-size: 12px; letter-spacing: .05em; display: block; }
+
+/* ---------- Pilotage ---------- */
+.zone-pilotage { overflow-y: auto; padding-bottom: 16px; }
+.zone-pilotage > * { margin-left: 14px; margin-right: 14px; }
+.zone-pilotage > .zone-entete { margin: 0; }
+.boutons-etape { display: grid; gap: 10px; }
+.bouton-etape {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  min-height: 62px;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: left;
+  padding: 10px 16px;
+  background: var(--panneau-2);
+}
+.bouton-etape.principal { background: #1f6f7a; border-color: #2a8a97; }
+.bouton-etape.secondaire { min-height: 46px; font-size: 16px; }
+.bouton-etape kbd { font-size: 13px; }
+.etape-message { color: var(--texte-2); padding: 12px 0; }
+button.annuler { width: calc(100% - 28px); margin-top: 12px; }
+.cadre-a-venir { margin-top: 14px; padding: 10px 12px; border: 1px dashed var(--bord); border-radius: var(--rayon); color: var(--texte-3); }
+.cadre-a-venir h3 { font-size: 14px; color: var(--texte-2); }
+.cadre-a-venir p { margin: 4px 0 0; font-size: 13px; }
+.aide-memoire { margin-top: 16px; }
+.aide-memoire h3 { font-size: 14px; color: var(--texte-2); margin-bottom: 6px; }
+.aide-memoire dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; margin: 0; font-size: 13px; }
+.aide-memoire dt { text-align: right; }
+.aide-memoire dd { margin: 0; color: var(--texte-2); }
+
+/* ---------- Fenêtres dans la page (éditeur, dialogues) ---------- */
+.voile { position: fixed; inset: 0; background: rgba(5, 8, 10, .72); display: flex; align-items: center; justify-content: center; z-index: 10; padding: 16px; }
+.voile[hidden] { display: none; }
+.voile-dialogue { z-index: 20; }
+.boite { background: var(--panneau); border: 1px solid var(--bord); border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, .5); max-height: 100%; display: flex; flex-direction: column; }
+.boite-dialogue { width: min(560px, 100%); padding: 20px 22px; gap: 12px; }
+.boite-dialogue h2 { font-size: 19px; }
+.boite-dialogue .contenu { overflow-y: auto; color: var(--texte-2); }
+.boite-dialogue .contenu ul { margin: 6px 0; padding-left: 20px; }
+.boite-dialogue .contenu li { margin: 3px 0; }
+.boite-dialogue .actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.boite-dialogue .actions button { min-width: 110px; padding: 9px 14px; }
+.erreur-texte { color: #ffb4ae; }
+.avertissement-texte { color: var(--avertissement); }
+
+/* ---------- Éditeur de chanson (section 4.1) ---------- */
+.boite-editeur { width: min(1500px, 100%); height: min(940px, 100%); }
+.editeur-entete, .editeur-pied { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 18px; border-bottom: 1px solid var(--bord); }
+.editeur-pied { border-bottom: 0; border-top: 1px solid var(--bord); }
+.editeur-pied .groupe { display: flex; gap: 8px; }
+.editeur-pied button { padding: 9px 16px; }
+.editeur-corps { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); }
+.editeur-champs { padding: 14px 18px; overflow-y: auto; border-right: 1px solid var(--bord); display: flex; flex-direction: column; gap: 10px; }
+.champ { display: flex; flex-direction: column; gap: 4px; }
+.champ > span { font-size: 13px; color: var(--texte-2); }
+.champ .obligatoire { color: var(--antenne); }
+.champ-radio { display: flex; gap: 14px; padding-top: 2px; }
+.champ-radio label { display: flex; align-items: center; gap: 6px; }
+.champ textarea { resize: vertical; min-height: 56px; }
+.etat-champ { font-size: 13px; min-height: 18px; }
+.etat-champ.ok { color: var(--ok); }
+.etat-champ.ko { color: #ffb4ae; }
+.editeur-paroles { display: flex; flex-direction: column; min-height: 0; padding: 14px 18px; gap: 8px; }
+.editeur-paroles .outils { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.editeur-paroles .outils .discret { margin-left: auto; }
+
+/* Zone de texte avec surlignage des mots à trouver : un calque derrière
+   la zone de texte reproduit le texte et surligne les groupes [ ]. */
+.zone-surlignee { position: relative; flex: 1 1 auto; min-height: 200px; border: 1px solid var(--bord); border-radius: 6px; background: var(--fond); overflow: hidden; }
+.zone-surlignee .calque, .zone-surlignee textarea {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 10px 12px;
+  font: 18px/1.6 var(--police);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  border: 0;
+  overflow-y: auto;
+}
+.zone-surlignee .calque { color: transparent; pointer-events: none; }
+.zone-surlignee .calque mark { color: transparent; background: var(--trou-fond); border-radius: 3px; box-shadow: 0 0 0 1px rgba(195, 155, 255, .55); }
+.zone-surlignee textarea { background: transparent; color: var(--texte); resize: none; caret-color: var(--texte); }
+.zone-surlignee textarea:focus-visible { outline: none; }
+.zone-surlignee:focus-within { border-color: var(--selection); }
+
+.infos-paroles { font-size: 14px; color: var(--texte-2); min-height: 20px; }
+.infos-paroles .liste-mots { color: var(--trou); }
+.apercu { border: 1px solid var(--bord); border-radius: 6px; background: #05070a; padding: 12px 16px; max-height: 38%; overflow-y: auto; font-size: 22px; }
+.apercu[hidden] { display: none; }
+.apercu .ligne-paroles { white-space: normal; padding: 2px 0; }
+.apercu h3 { font-size: 13px; color: var(--texte-3); margin-bottom: 6px; font-weight: 400; }
+
+/* ---------- Notifications et dépôt de fichiers ---------- */
+.notifications { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 30; pointer-events: none; }
+.notification { background: var(--panneau-3); border: 1px solid var(--bord); border-left: 4px solid var(--ok); padding: 10px 16px; border-radius: var(--rayon); box-shadow: 0 8px 24px rgba(0, 0, 0, .4); }
+.notification.erreur { border-left-color: var(--danger); }
+.depot { position: fixed; inset: 12px; border: 3px dashed var(--selection); border-radius: 16px; background: rgba(21, 52, 58, .85); display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; z-index: 40; pointer-events: none; }
+.depot[hidden] { display: none; }
+
+/* ---------- Écrans plus petits (1366 × 768, mise à l'échelle Windows) ---------- */
+@media (max-width: 1500px) {
+  html, body { font-size: 14px; }
+  .lignes-chanson { font-size: 19px; }
+  .bouton-etape { min-height: 54px; font-size: 18px; }
+  .bandeau-boutons button { padding: 6px 9px; font-size: 13px; }
+}

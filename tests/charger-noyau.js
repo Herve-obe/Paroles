@@ -8,3 +8,6 @@ require('../app/js/noyau/mots.js');
 require('../app/js/noyau/comparaison.js');
 require('../app/js/noyau/chanson.js');
 require('../app/js/noyau/format-txt.js');
+require('../app/js/noyau/emission.js');
+require('../app/js/noyau/jeu.js');
+require('../app/js/noyau/edition.js');

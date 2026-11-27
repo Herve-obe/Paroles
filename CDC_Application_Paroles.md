@@ -56,7 +56,7 @@ Un opérateur pilote l'application depuis la régie. Elle remplit **six fonction
 
 Une seule fenêtre en 1920 × 1080, en trois zones :
 
-- **À gauche, la conduite :** la liste des chansons de l'émission dans l'ordre, avec pour chacune le candidat, la catégorie (thème à 10, 20, 30, 40 ou 50 points, « La même chanson », finale), le mode ORCHESTRE ou PLAYBACK, et l'état (à venir, en cours, jouée). Boutons : « Nouvelle chanson », « Modifier », « Monter », « Descendre », « Supprimer ».
+- **À gauche, la conduite :** la liste des chansons de l'émission dans l'ordre, avec pour chacune le candidat, la catégorie (thème à 10, 20, 30, 40 ou 50 points, « La même chanson », finale), le mode ORCHESTRE ou PLAYBACK, et l'état (à venir, en cours, jouée). Boutons : « Nouvelle chanson », « Modifier », « Charger », « Monter », « Descendre », « Supprimer », « Importer .txt », « Exporter la chanson ». Un clic sélectionne une chanson ; « Charger » (ou un double-clic) la prépare pour le direct.
 - **Au centre, la chanson en cours :** toutes les lignes, la ligne affichée à l'antenne surlignée, la ligne suivante repérée, le passage à trou encadré. Les mots à trouver restent lisibles en clair pour l'opérateur.
 - **À droite, le pilotage :**
   - les gros boutons de l'étape en cours (section 3.3) ;
@@ -137,7 +137,7 @@ Une ligne après le trou (facultative)
 - Un crochet doit se fermer sur la même ligne. Un crochet au milieu d'un mot (`chan[tons]`, `l'[amour]`) est refusé, de même que des crochets vides.
 - Le fichier est normalement en UTF-8 ; un fichier enregistré en ANSI (Windows-1252) par un ancien Bloc-notes est converti automatiquement, avec un avertissement.
 - Import : glisser-déposer d'un ou plusieurs `.txt` sur l'écran opérateur, ou bouton « Importer ». Une erreur indique le fichier et le numéro de ligne. Un fichier qui contient une erreur est refusé ; un avertissement (par exemple fausse proposition absente) n'empêche pas l'import.
-- Export : « Exporter la chanson » crée le `.txt` correspondant.
+- Export : « Exporter la chanson » crée le `.txt` correspondant. Sous Chrome et Edge, une fenêtre « Enregistrer sous » propose le nom du fichier (titre de la chanson) ; sous Firefox, le fichier part dans Téléchargements. (Une page ouverte par double-clic ne peut pas imposer le nom d'un simple téléchargement : Chrome l'appellerait « download ».)
 
 ### 4.3 Découpage en mots
 
@@ -151,8 +151,8 @@ Une ligne après le trou (facultative)
 
 ## 5. Fonction 2 : faire défiler les paroles
 
-- « Afficher le titre » montre le titre et l'artiste. « Commencer » affiche la ligne 1 bien visible et la ligne 2 atténuée.
-- « Ligne suivante » (ou Espace) affiche la ligne suivante immédiatement, sans animation qui retarde (moins de 50 ms entre le clic et l'affichage).
+- « Afficher le titre » montre le titre et l'artiste ; un second clic (« Masquer le titre ») le retire. « Commencer » affiche la ligne 1 bien visible et la ligne 2 atténuée.
+- « Ligne suivante » (ou Espace) affiche la ligne suivante immédiatement, sans animation qui retarde (moins de 50 ms entre le clic et l'affichage). Sur une chanson chargée, « Ligne suivante » équivaut à « Commencer ». Une touche maintenue enfoncée ne répète pas l'action.
 - Avant la révélation, le défilement s'arrête à la dernière ligne du passage à trou. S'il y a des lignes après le passage à trou, « Ligne suivante » redevient disponible une fois la réponse révélée, et les affiche normalement.
 - De la saisie à la révélation, les écrans de sortie montrent toutes les lignes du passage à trou ensemble, même si le réglage est sur 1 ligne, et ne montrent plus de ligne suivante.
 - Les écrans de sortie montrent 2 lignes par défaut : la ligne en cours bien visible, la suivante atténuée (réglable à 1 ou 3 lignes).
@@ -396,3 +396,10 @@ Réponses du formateur aux questions de l'étape 1, déjà reportées dans les s
 | 27 | Livraison | Une pull request par lot, fusionnée par le formateur, puis test sur son PC (0) |
 
 Précision ajoutée pendant le lot 1 : un signe de ponctuation isolé entre deux espaces n'est pas un mot (4.3).
+
+Précisions ajoutées pendant le lot 2 :
+
+- bouton « Charger » dans la conduite (un clic sélectionne, « Charger » ou un double-clic prépare la chanson pour le direct) (3.1) ;
+- « Afficher le titre » fonctionne en bascule (un second clic masque le titre) ; « Ligne suivante » sur une chanson chargée équivaut à « Commencer » (5) ;
+- une touche maintenue enfoncée ne répète pas l'action, pour ne jamais sauter plusieurs lignes par erreur (11.1) ;
+- export `.txt` par la fenêtre « Enregistrer sous » de Chrome et Edge (4.2).

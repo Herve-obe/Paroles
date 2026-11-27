@@ -1,0 +1,104 @@
+/*
+ * Styles communs : couleurs du thème de l'émission de l'école, police,
+ * boutons. Thème propre à l'école : il ne reproduit pas l'habillage du
+ * programme télévisé (section 11).
+ */
+:root {
+  /* Fond et surfaces (thème sombre : moins d'éblouissement en régie) */
+  --fond: #0f1317;
+  --panneau: #171d23;
+  --panneau-2: #1f2730;
+  --panneau-3: #28323d;
+  --bord: #313c48;
+  --texte: #e9eef3;
+  --texte-2: #a3b0bd;
+  --texte-3: #6f7d8b;
+
+  /* Repères */
+  --antenne: #f4b740;        /* ligne à l'antenne */
+  --antenne-fond: #3a2f14;
+  --selection: #4db6c4;      /* chanson sélectionnée dans la conduite */
+  --selection-fond: #15343a;
+  --trou: #c39bff;           /* mots à trouver, vus par l'opérateur */
+  --trou-fond: #2b2140;
+  --danger: #ef5b52;
+  --danger-fond: #3d1c1a;
+  --ok: #49c26b;
+  --avertissement: #f0a43a;
+
+  /* Couleurs du jeu (réglables au lot 6) */
+  --propose: #ffd60a;
+  --bloque: #3a8dff;
+  --juste: #2fbf5b;
+  --faux: #ef3b36;
+
+  --rayon: 8px;
+  --police: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--police);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+h1, h2, h3 { margin: 0; font-weight: 700; }
+
+button {
+  font: inherit;
+  color: var(--texte);
+  background: var(--panneau-3);
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon);
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: background-color .08s;
+}
+button:hover:not(:disabled) { background: #33404d; }
+button:active:not(:disabled) { background: #3c4b5a; }
+button:disabled { opacity: .4; cursor: not-allowed; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--selection);
+  outline-offset: 1px;
+}
+button.principal { background: #1f6f7a; border-color: #2a8a97; }
+button.principal:hover:not(:disabled) { background: #26828e; }
+button.danger { color: #ffb4ae; }
+button.danger:hover:not(:disabled) { background: var(--danger-fond); }
+
+input, select, textarea {
+  font: inherit;
+  color: var(--texte);
+  background: var(--fond);
+  border: 1px solid var(--bord);
+  border-radius: 6px;
+  padding: 7px 9px;
+}
+
+.discret { color: var(--texte-2); font-size: 13px; }
+
+kbd {
+  font-family: var(--police);
+  font-size: 12px;
+  padding: 1px 6px;
+  border: 1px solid var(--bord);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--panneau-2);
+  color: var(--texte-2);
+  white-space: nowrap;
+}
+
+/* ---- Lignes de paroles (opérateur, aperçu, écrans de sortie) ---- */
+.ligne-paroles { white-space: nowrap; }
+.ligne-paroles .mot { display: inline-block; }
+/* Mot à trouver masqué : léger espacement entre les « _ » d'un même mot,
+   et un espace nettement plus large entre deux mots (section 5). */
+.ligne-paroles .mot.masque { letter-spacing: .18em; margin: 0 .22em; }

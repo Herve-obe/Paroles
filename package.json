@@ -4,6 +4,7 @@
   "private": true,
   "description": "Application locale de pilotage des paroles pour le tournage pédagogique « N'oubliez pas les paroles » (BTS Audiovisuel).",
   "scripts": {
-    "test": "node --test \"tests/unitaires/*.test.js\""
+    "test": "node --test \"tests/unitaires/*.test.js\"",
+    "test:interface": "node --test --test-concurrency=1 \"tests/interface/*.test.js\""
   }
 }
