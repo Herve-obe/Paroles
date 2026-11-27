@@ -16,6 +16,8 @@
     courante: null,      // chanson chargée pour le direct
     jeu: null,           // état du déroulé de la chanson chargée (module jeu)
     historique: P.jeu.creerHistorique(),
+    preferences: P.preferences.creer(),  // modifiables au lot 6
+    noir: false,         // bouton « Noir » enfoncé
 
     /** La chanson chargée, ou null. */
     chansonCourante() {
@@ -87,6 +89,12 @@
       app.historique.vider();
     },
 
+    /** « Noir » : vide les écrans de sortie ; un second appui réaffiche. */
+    basculerNoir() {
+      app.noir = !app.noir;
+      app.rafraichir();
+    },
+
     /** Raccourcis clavier : même effet que les boutons. */
     executer(action) {
       const chanson = app.chansonCourante();
@@ -113,6 +121,12 @@
         case 'annuler':
           app.annuler();
           break;
+        case 'noir':
+          app.basculerNoir();
+          break;
+        case 'ouvrirEcran':
+          P.sorties.ouvrir();
+          break;
         default:
           break;
       }
@@ -124,6 +138,10 @@
       P.conduite.afficher(app);
       P.chansonEnCours.afficher(app);
       P.pilotage.afficher(app);
+      const boutonNoir = document.getElementById('btn-noir');
+      boutonNoir.classList.toggle('actif', app.noir);
+      boutonNoir.title = app.noir ? 'Écrans de sortie au noir : cliquez pour réafficher' : 'Vider tous les écrans de sortie';
+      P.sorties.diffuser(app);
     }
   };
 
@@ -131,8 +149,10 @@
   P.conduite.installer(app);
   P.fichiers.installer(app);
   P.pilotage.installer(app);
+  P.sorties.installer(app);
   P.raccourcis.installer({
     executer: app.executer,
+    estBloque: () => P.dialogues.estOuvert() || P.editeur.estOuvert(),
     // Dialogue puis éditeur sont prioritaires sur les raccourcis du jeu.
     avant: (e) => P.dialogues.gererClavier(e) || P.editeur.gererClavier(e)
   });

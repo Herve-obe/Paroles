@@ -8,19 +8,17 @@
   <link rel="stylesheet" href="css/polices.css">
   <link rel="stylesheet" href="css/commun.css">
   <link rel="stylesheet" href="css/operateur.css">
+  <link rel="stylesheet" href="css/sortie.css">
 </head>
 <body class="operateur">
 
   <!-- ============ Bandeau du haut (section 3.1) ============ -->
   <header class="bandeau">
     <div class="bandeau-nom" id="nom-emission">Paroles</div>
-    <div class="voyants" id="voyants">
-      <span class="voyant" title="Les écrans de sortie arrivent au lot 3">Écran 1 : fermé</span>
-      <span class="voyant" title="Les écrans de sortie arrivent au lot 3">Écran 2 : fermé</span>
-    </div>
+    <div class="voyants" id="voyants"></div>
     <div class="bandeau-boutons">
-      <button type="button" disabled title="Disponible au lot 3">Ouvrir un écran de sortie</button>
-      <button type="button" disabled title="Disponible au lot 3">Noir</button>
+      <button type="button" id="btn-ouvrir-ecran">Ouvrir un écran de sortie <kbd>F2</kbd></button>
+      <button type="button" id="btn-noir" class="bouton-noir">Noir <kbd>F1</kbd></button>
       <button type="button" disabled title="Disponible au lot 6">Préférences</button>
       <button type="button" disabled title="Disponible au lot 6">Enregistrer l'émission</button>
     </div>
@@ -55,6 +53,16 @@
         <h2 id="titre-chanson">Aucune chanson chargée</h2>
       </div>
       <div class="lignes-chanson" id="lignes-chanson"></div>
+      <div class="apercus" aria-label="Aperçu des écrans de sortie">
+        <figure class="apercu-sortie">
+          <figcaption class="apercu-nom">Écran 1</figcaption>
+          <div class="apercu-cadre" data-apercu-ecran="1"><div class="scene"></div></div>
+        </figure>
+        <figure class="apercu-sortie">
+          <figcaption class="apercu-nom">Écran 2</figcaption>
+          <div class="apercu-cadre" data-apercu-ecran="2"><div class="scene"></div></div>
+        </figure>
+      </div>
     </section>
 
     <!-- ============ À droite : le pilotage ============ -->
@@ -72,10 +80,6 @@
       <div class="cadre-a-venir">
         <h3>Jokers</h3>
         <p>« 2 mots » et « 3 propositions » : lot 5.</p>
-      </div>
-      <div class="cadre-a-venir">
-        <h3>Aperçu des écrans de sortie</h3>
-        <p>Prompteur et incrustation : lot 3.</p>
       </div>
 
       <div class="aide-memoire">
@@ -100,7 +104,11 @@
   <script src="js/noyau/emission.js"></script>
   <script src="js/noyau/jeu.js"></script>
   <script src="js/noyau/edition.js"></script>
+  <script src="js/noyau/preferences.js"></script>
+  <script src="js/noyau/affichage.js"></script>
+  <script src="js/commun/liaison.js"></script>
   <script src="js/commun/rendu-paroles.js"></script>
+  <script src="js/commun/rendu-sortie.js"></script>
   <script src="js/operateur/dialogues.js"></script>
   <script src="js/operateur/raccourcis.js"></script>
   <script src="js/operateur/conduite.js"></script>
@@ -108,6 +116,7 @@
   <script src="js/operateur/editeur.js"></script>
   <script src="js/operateur/chanson-en-cours.js"></script>
   <script src="js/operateur/pilotage.js"></script>
+  <script src="js/operateur/sorties.js"></script>
   <script src="js/operateur.js"></script>
 </body>
 </html>

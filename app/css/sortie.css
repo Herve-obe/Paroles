@@ -1,0 +1,83 @@
+/*
+ * Écrans de sortie (section 3.2) : prompteur et incrustation.
+ * Utilisé par sortie.html et par les aperçus de l'écran opérateur.
+ * La scène mesure toujours 1920 × 1080 points, puis elle est mise à
+ * l'échelle : les tailles ci-dessous sont donc des tailles en 1080p.
+ */
+.scene {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: 0 0;
+  overflow: hidden;
+  font-family: var(--police);
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+/* Lignes : jamais coupées, réduites automatiquement si trop longues. */
+.scene .ligne-sortie,
+.scene .titre,
+.scene .artiste {
+  display: block;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-align: center;
+}
+.scene .mot.masque { letter-spacing: .16em; margin: 0 .2em; }
+
+/* ---------- Prompteur : fond sombre, gros caractères, pour le candidat ---------- */
+.scene[data-mode="prompteur"] {
+  background: #000000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 100px;
+}
+.scene[data-mode="prompteur"] .paroles-sortie { display: flex; flex-direction: column; gap: 34px; }
+.scene[data-mode="prompteur"] .ligne-sortie.courante { font-size: 104px; }
+.scene[data-mode="prompteur"] .ligne-sortie.suivante { font-size: 76px; opacity: .42; }
+.scene[data-mode="prompteur"] .titre-sortie { display: flex; flex-direction: column; gap: 30px; }
+.scene[data-mode="prompteur"] .titre { font-size: 124px; }
+.scene[data-mode="prompteur"] .artiste { font-size: 68px; color: #b9c3cf; font-weight: 400; }
+
+/* ---------- Incrustation : bandeau en bas sur fond uni (noir ou vert) ---------- */
+.scene[data-mode="incrustation"] { background: var(--fond-incrustation, #000000); }
+.scene .bandeau-incrustation {
+  position: absolute;
+  left: 90px;
+  right: 90px;
+  bottom: 70px;
+  /* Fond opaque du bandeau : les mots verts ne sont jamais découpés par le chroma key. */
+  background: var(--fond-bandeau, #14213d);
+  border-radius: 22px;
+  padding: 28px 56px;
+}
+.scene[data-mode="incrustation"] .paroles-sortie { display: flex; flex-direction: column; gap: 12px; }
+.scene[data-mode="incrustation"] .ligne-sortie.courante { font-size: 68px; }
+.scene[data-mode="incrustation"] .ligne-sortie.suivante { font-size: 50px; opacity: .55; }
+.scene[data-mode="incrustation"] .titre-sortie { display: flex; flex-direction: column; gap: 8px; }
+.scene[data-mode="incrustation"] .titre { font-size: 72px; }
+.scene[data-mode="incrustation"] .artiste { font-size: 46px; color: #c9d2dc; font-weight: 400; }
+
+/* ---------- Fenêtre de sortie ---------- */
+body.sortie { margin: 0; overflow: hidden; background: #000000; cursor: default; }
+body.sortie.plein-ecran { cursor: none; } /* pas de curseur en plein écran */
+.aide-sortie {
+  position: fixed;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: rgba(40, 50, 60, .85);
+  color: #e9eef3;
+  font: 14px/1.3 var(--police);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.aide-sortie[hidden] { display: none; }
