@@ -1,0 +1,9 @@
+{
+  "name": "paroles",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Application locale de pilotage des paroles pour le tournage pédagogique « N'oubliez pas les paroles » (BTS Audiovisuel).",
+  "scripts": {
+    "test": "node --test \"tests/unitaires/*.test.js\""
+  }
+}
