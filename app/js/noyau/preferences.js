@@ -15,7 +15,9 @@
       nbLignes: 2,                  // lignes affichées : 1, 2 ou 3
       ligneSuivante: true,          // ligne suivante atténuée affichée
       fondIncrustation: '#000000',  // fond autour du bandeau : noir, vert ou couleur libre
-      fondBandeau: '#14213d'        // fond opaque du bandeau d'incrustation (bleu nuit)
+      fondBandeau: '#14213d',       // fond opaque du bandeau d'incrustation (bleu nuit)
+      fonduTitre: 0.6,              // durée du fondu du titre, en secondes
+      defilement: 0.35              // durée du défilement des lignes, en secondes (0 = affichage sec)
     };
   }
 

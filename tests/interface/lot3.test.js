@@ -40,18 +40,27 @@ async function ouvrirEcran() {
   return fenetre;
 }
 
-/** Texte visible d'un écran de sortie (espaces normalisés). */
+/** Texte réellement visible d'un écran de sortie (sans les lignes en train de sortir). */
 async function texteEcran(fenetre) {
-  return (await fenetre.evaluate(() => document.getElementById('scene').innerText)).replace(/\s+/g, ' ').trim();
+  return fenetre.evaluate(() => Paroles.renduSortie.texteVisible(document.getElementById('scene')));
 }
 
-/** Attend que le texte d'un écran de sortie vérifie une condition. */
+/** Attend que le texte visible d'un écran de sortie vérifie une condition. */
 async function attendreTexte(fenetre, motif) {
-  await fenetre.waitForFunction(
-    (source) => new RegExp(source).test(document.getElementById('scene').innerText.replace(/\s+/g, ' ')),
-    motif.source,
-    { timeout: 5000 }
-  );
+  try {
+    await fenetre.waitForFunction(
+      (source) => new RegExp(source).test(Paroles.renduSortie.texteVisible(document.getElementById('scene'))),
+      motif.source,
+      { timeout: 5000 }
+    );
+  } catch (erreur) {
+    throw new Error('texte attendu ' + motif + ', texte affiché : « ' + (await texteEcran(fenetre)) + ' »');
+  }
+}
+
+/** Attend qu'un écran de sortie n'affiche plus rien. */
+async function attendreVide(fenetre) {
+  await fenetre.waitForFunction(() => Paroles.renduSortie.texteVisible(document.getElementById('scene')) === '', null, { timeout: 5000 });
 }
 
 const voyants = () => operateur.textContent('#voyants');
@@ -97,12 +106,44 @@ describe('Lot 3 : deux écrans de sortie suivent l\'opérateur', () => {
     await attendreTexte(ecran2, /Le café du port.*Les Marées Basses/);
   });
 
-  test('« Commencer » : ligne 1 et ligne 2 atténuée sur les deux écrans', async () => {
+  test('« Commencer » après le titre : fondu vers un écran sans paroles (intro)', async () => {
+    const fondu = await ecran1.evaluate(() => getComputedStyle(document.querySelector('.calque-titre')).transitionDuration);
+    assert.equal(fondu, '0.6s', 'le titre disparaît en fondu');
     await operateur.click('button[data-action="commencer"]');
+    assert.match(await operateur.textContent('#titre-etape'), /Intro \(écran sans paroles\)/);
+    await attendreVide(ecran1);
+    await attendreVide(ecran2);
+  });
+
+  test('« Afficher la première ligne » : ligne 1 au milieu, ligne 2 en dessous, plus petite et plus foncée', async () => {
+    await operateur.click('button[data-action="ligneSuivante"]');
     await attendreTexte(ecran1, /^Sur le quai, les mouettes se disputent le matin Le patron du café/);
     await attendreTexte(ecran2, /^Sur le quai, les mouettes se disputent le matin Le patron du café/);
-    assert.equal(await ecran1.locator('.ligne-sortie.suivante').count(), 1);
-    assert.equal(await ecran2.locator('.bandeau-incrustation').count(), 1, 'l\'incrustation a son bandeau');
+    await ecran1.waitForTimeout(500); // fin du mouvement
+    const places = await ecran1.evaluate(() => {
+      const echelle = document.getElementById('scene').getBoundingClientRect().height / 1080;
+      const mesure = (sel) => {
+        const el = document.querySelector(sel);
+        const r = el.getBoundingClientRect();
+        return { milieu: (r.top + r.height / 2) / echelle, hauteur: r.height / echelle, opacite: Number(getComputedStyle(el).opacity) };
+      };
+      return { courante: mesure('.ligne-sortie.courante'), suivante: mesure('.ligne-sortie.suivante') };
+    });
+    assert.ok(Math.abs(places.courante.milieu - 540) < 20, 'ligne à chanter au milieu : ' + JSON.stringify(places));
+    assert.ok(places.suivante.milieu > places.courante.milieu, 'ligne suivante en dessous');
+    assert.ok(places.suivante.hauteur < places.courante.hauteur, 'ligne suivante plus petite');
+    assert.ok(places.suivante.opacite < 1, 'ligne suivante plus foncée');
+  });
+
+  test('défilement : la ligne suivante monte à la place de la ligne à chanter (même élément, déplacé)', async () => {
+    await ecran1.evaluate(() => { window.ligneSuivanteAvant = document.querySelector('.ligne-sortie.suivante'); });
+    const transition = await ecran1.evaluate(() => window.ligneSuivanteAvant.style.transition);
+    assert.match(transition, /transform 0\.35s/);
+    await operateur.keyboard.press('Space');
+    await attendreTexte(ecran1, /^Le patron du café/);
+    assert.equal(await ecran1.evaluate(() => window.ligneSuivanteAvant.classList.contains('courante')), true);
+    await operateur.keyboard.press('ArrowLeft');
+    await attendreTexte(ecran1, /^Sur le quai/);
   });
 
   test('sans décalage visible : moins de 50 ms entre le clic et l\'affichage sur chaque écran', async () => {
@@ -133,12 +174,12 @@ describe('Lot 3 : deux écrans de sortie suivent l\'opérateur', () => {
     await attendreTexte(ecran1, /^Moi j'attends sur le banc/);
     const texte = await texteEcran(ecran1);
     assert.ok(!/tous les soirs/.test(texte), texte);
-    assert.equal(await ecran1.locator('.mot.masque').count(), 8, '4 mots masqués sur la ligne en cours, 4 sur la suivante');
+    assert.equal(await ecran1.locator('.ligne-sortie:not(.sortante) .mot.masque').count(), 8, '4 mots masqués sur la ligne en cours, 4 sur la suivante');
     assert.equal(await ecran1.textContent('.ligne-sortie.courante .mot.masque:last-child'), "_'___");
   });
 
   test('les aperçus de l\'écran opérateur montrent la même chose que les écrans de sortie', async () => {
-    const apercu1 = (await operateur.evaluate(() => document.querySelector('[data-apercu-ecran="1"] .scene').innerText)).replace(/\s+/g, ' ').trim();
+    const apercu1 = await operateur.evaluate(() => Paroles.renduSortie.texteVisible(document.querySelector('[data-apercu-ecran="1"] .scene')));
     assert.equal(apercu1, await texteEcran(ecran1));
     assert.equal(await operateur.getAttribute('[data-apercu-ecran="2"] .scene', 'data-mode'), 'incrustation');
   });
@@ -151,8 +192,8 @@ describe('Lot 3 : deux écrans de sortie suivent l\'opérateur', () => {
 
   test('« Noir » vide les écrans ; un second clic réaffiche', async () => {
     await operateur.click('#btn-noir');
-    await ecran1.waitForFunction(() => document.getElementById('scene').innerText.trim() === '');
-    await ecran2.waitForFunction(() => document.querySelectorAll('.bandeau-incrustation').length === 0);
+    await attendreVide(ecran1);
+    await ecran2.waitForFunction(() => getComputedStyle(document.querySelector('.bandeau-incrustation')).visibility === 'hidden');
     const fond = await ecran2.evaluate(() => getComputedStyle(document.getElementById('scene')).backgroundColor);
     assert.equal(fond, 'rgb(0, 0, 0)', 'l\'incrustation garde son fond');
     assert.match(await operateur.getAttribute('#btn-noir', 'class'), /actif/);
@@ -164,7 +205,7 @@ describe('Lot 3 : deux écrans de sortie suivent l\'opérateur', () => {
 
   test('touche F1 : « Noir », puis réaffichage', async () => {
     await operateur.keyboard.press('F1');
-    await ecran1.waitForFunction(() => document.getElementById('scene').innerText.trim() === '');
+    await attendreVide(ecran1);
     await operateur.keyboard.press('F1');
     await attendreTexte(ecran1, /^Et chacun refait le monde/);
   });
@@ -195,11 +236,50 @@ describe('Lot 3 : deux écrans de sortie suivent l\'opérateur', () => {
     await ecran1.waitForFunction(() => !document.fullscreenElement, null, { timeout: 3000 });
   });
 
+  test('le double-clic ne sélectionne aucun mot du texte affiché', async () => {
+    await ecran1.dblclick('.ligne-sortie.courante');
+    assert.equal(await ecran1.evaluate(() => window.getSelection().toString()), '');
+    await ecran1.waitForFunction(() => !!document.fullscreenElement, null, { timeout: 3000 });
+    await ecran1.dblclick('.ligne-sortie.courante');
+    assert.equal(await ecran1.evaluate(() => window.getSelection().toString()), '');
+    await ecran1.waitForFunction(() => !document.fullscreenElement, null, { timeout: 3000 });
+  });
+
+  test('clic sur le voyant d\'un écran ouvert : confirmation, puis l\'écran se ferme', async () => {
+    await operateur.click('#voyants [data-ecran="2"]');
+    await operateur.waitForSelector('#dialogue:not([hidden])');
+    assert.match(await operateur.textContent('#dialogue'), /Fermer l'écran de sortie 2/);
+    await Promise.all([ecran2.waitForEvent('close'), operateur.click('#dialogue button:has-text("Fermer l\'écran")')]);
+    await operateur.waitForFunction(() => /Écran 2 : fermé/.test(document.getElementById('voyants').textContent));
+  });
+
+  test('clic sur le voyant d\'un écran fermé : cet écran-là s\'ouvre', async () => {
+    const [fenetre] = await Promise.all([operateur.waitForEvent('popup'), operateur.click('#voyants [data-ecran="2"]')]);
+    surveiller(fenetre);
+    ecran2 = fenetre;
+    await ecran2.waitForLoadState();
+    assert.match(ecran2.url(), /ecran=2$/);
+    await attendreTexte(ecran2, /^Et chacun refait le monde/);
+  });
+
+  test('« Arrêter la chanson » : confirmation, chanson fermée, écrans vidés', async () => {
+    await operateur.click('#btn-arreter');
+    await operateur.waitForSelector('#dialogue:not([hidden])');
+    await operateur.click('#dialogue button:has-text("Arrêter la chanson")');
+    assert.equal(await operateur.textContent('#titre-etape'), 'Étape : Aucune chanson chargée');
+    assert.match(await operateur.textContent('#liste-conduite'), /à venir/);
+    await attendreVide(ecran1);
+    await attendreVide(ecran2);
+    await operateur.keyboard.press('ArrowDown');
+    await operateur.keyboard.press('Enter');
+    await attendreTexte(ecran1, /^Sur le quai/);
+  });
+
   test('l\'écran opérateur rechargé retrouve ses écrans de sortie ouverts', async () => {
     await operateur.reload();
     await operateur.waitForFunction(() => document.querySelectorAll('#voyants .voyant.ouvert').length === 2, null, { timeout: 5000 });
     // Sans sauvegarde (lot 6), plus de chanson chargée : les écrans se vident.
-    await ecran1.waitForFunction(() => document.getElementById('scene').innerText.trim() === '');
+    await attendreVide(ecran1);
   });
 
   test('aucune erreur JavaScript et aucun appel réseau', () => {

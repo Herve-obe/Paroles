@@ -16,7 +16,7 @@
   const PAR_DEFAUT = [
     { action: 'ligneSuivante', libelle: 'Ligne suivante', touches: ['Espace', 'Flèche droite'] },
     { action: 'lignePrecedente', libelle: 'Ligne précédente', touches: ['Flèche gauche'] },
-    { action: 'etapeSuivante', libelle: 'Étape suivante (commencer)', touches: ['Entrée'] },
+    { action: 'etapeSuivante', libelle: 'Étape suivante (commencer, première ligne)', touches: ['Entrée'] },
     { action: 'chansonPrecedente', libelle: 'Chanson précédente', touches: ['Flèche haut'] },
     { action: 'chansonSuivante', libelle: 'Chanson suivante', touches: ['Flèche bas'] },
     { action: 'annuler', libelle: 'Annuler la dernière action', touches: ['Ctrl+Z'] },

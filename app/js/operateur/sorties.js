@@ -52,8 +52,11 @@
       }),
       preferences: {
         ecrans: prefs.ecrans,
+        nbLignes: prefs.nbLignes,
         fondIncrustation: prefs.fondIncrustation,
-        fondBandeau: prefs.fondBandeau
+        fondBandeau: prefs.fondBandeau,
+        fonduTitre: prefs.fonduTitre,
+        defilement: prefs.defilement
       }
     };
   }
@@ -80,14 +83,15 @@
     });
   }
 
-  /** Voyants du bandeau : un par écran de sortie. */
+  /** Voyants du bandeau : un par écran de sortie ; un clic ouvre ou ferme cet écran. */
   function majVoyants() {
     const app = etat.app;
     const zone = document.getElementById('voyants');
     [1, 2].forEach((numero) => {
       let voyant = zone.querySelector('[data-ecran="' + numero + '"]');
       if (!voyant) {
-        voyant = document.createElement('span');
+        voyant = document.createElement('button');
+        voyant.type = 'button';
         voyant.dataset.ecran = String(numero);
         zone.appendChild(voyant);
       }
@@ -98,18 +102,19 @@
       if (voyant.textContent !== texte) voyant.textContent = texte;
       voyant.className = 'voyant' + (ouvert ? ' ouvert' : '') + (plein ? ' plein' : '');
       voyant.title = ouvert
-        ? (plein ? 'Écran de sortie ouvert en plein écran.' : 'Écran de sortie ouvert, pas en plein écran : double-cliquez dessus.')
-        : 'Écran de sortie fermé : « Ouvrir un écran de sortie ».';
+        ? (plein ? 'Ouvert en plein écran.' : 'Ouvert, pas en plein écran : double-cliquez dans la fenêtre.') + ' Cliquez ici pour fermer cet écran.'
+        : 'Fermé. Cliquez ici pour ouvrir cet écran.';
     });
     document.getElementById('btn-ouvrir-ecran').disabled = estOuvert(1) && estOuvert(2);
   }
 
   /**
-   * « Ouvrir un écran de sortie » : ouvre la première place libre (1 puis 2).
+   * Ouvre un écran de sortie : celui demandé (clic sur son voyant) ou la
+   * première place libre (bouton « Ouvrir un écran de sortie », F2).
    * Doit être appelé depuis un clic ou une touche (sinon le navigateur bloque la fenêtre).
    */
-  function ouvrir() {
-    const numero = [1, 2].find((n) => !estOuvert(n));
+  function ouvrir(numeroDemande) {
+    const numero = numeroDemande || [1, 2].find((n) => !estOuvert(n));
     if (!numero) {
       Paroles.dialogues.notifier('Les 2 écrans de sortie sont déjà ouverts.');
       return;
@@ -129,6 +134,25 @@
     }
     etat.fenetres[numero] = fenetre;
     etat.presence[numero] = { vu: 0, plein: false };
+    majVoyants();
+  }
+
+  /** Ferme l'écran de sortie n° numero (après confirmation dans la page). */
+  async function fermer(numero) {
+    const ok = await Paroles.dialogues.confirmer(
+      'Fermer l\'écran de sortie ' + numero + ' ?',
+      'La fenêtre de l\'écran ' + numero + ' sera fermée. Un clic sur son voyant la rouvrira.',
+      'Fermer l\'écran',
+      'danger'
+    );
+    if (!ok) return;
+    // L'écran se ferme lui-même à la réception du message ; on le ferme aussi
+    // directement quand cet écran opérateur l'a ouvert.
+    etat.liaison.envoyer({ type: 'fermer', ecran: numero }, fenetres());
+    const f = etat.fenetres[numero];
+    try { if (f && !f.closed) f.close(); } catch (e) { /* déjà fermée */ }
+    etat.fenetres[numero] = null;
+    etat.presence[numero] = { vu: 1, plein: false };
     majVoyants();
   }
 
@@ -154,7 +178,14 @@
   function installer(app) {
     etat.app = app;
     etat.liaison = Paroles.liaison.creer(recevoir);
-    document.getElementById('btn-ouvrir-ecran').addEventListener('click', ouvrir);
+    document.getElementById('btn-ouvrir-ecran').addEventListener('click', () => ouvrir());
+    document.getElementById('voyants').addEventListener('click', (e) => {
+      const voyant = e.target.closest('[data-ecran]');
+      if (!voyant) return;
+      const numero = Number(voyant.dataset.ecran);
+      if (estOuvert(numero)) fermer(numero);
+      else ouvrir(numero);
+    });
     document.getElementById('btn-noir').addEventListener('click', () => app.basculerNoir());
     // Les écrans déjà ouverts (écran opérateur rechargé) se signalent tout de suite.
     etat.liaison.envoyer({ type: 'appel' });
@@ -167,5 +198,5 @@
     majVoyants();
   }
 
-  Paroles.sorties = { installer, diffuser, ouvrir, estOuvert };
+  Paroles.sorties = { installer, diffuser, ouvrir, fermer, estOuvert };
 })(typeof globalThis !== 'undefined' ? globalThis : window);

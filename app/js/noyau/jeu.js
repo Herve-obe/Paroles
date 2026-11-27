@@ -3,7 +3,8 @@
  * Référence : cahier des charges, sections 3.3 et 5.
  *
  * L'état du déroulé est un petit objet :
- *   { phase: 'chargee' | 'jeu', titre: true/false, ligne: index ou null }
+ *   { phase: 'chargee' | 'intro' | 'jeu', titre: true/false, ligne: index ou null }
+ * « intro » : écran sans paroles entre le titre et la première ligne.
  * (les phases « saisie », « bloque » et « revele » arrivent aux lots 4 et 5).
  *
  * « appliquer » ne modifie jamais l'état reçu : il en renvoie un nouveau.
@@ -30,14 +31,23 @@
 
   /**
    * Étape affichée à l'opérateur (section 3.3) :
-   * 'chargee', 'defilement' ou 'trou'.
+   * 'chargee', 'intro', 'defilement' ou 'trou'.
    */
   function etape(etat, chanson) {
-    if (etat.phase === 'chargee') return 'chargee';
+    if (etat.phase === 'chargee' || etat.phase === 'intro') return etat.phase;
     if (etat.phase !== 'jeu') return etat.phase;
     const trou = Paroles.chanson.passage(chanson);
     if (trou && etat.ligne >= trou.debut && etat.ligne <= trou.fin) return 'trou';
     return 'defilement';
+  }
+
+  /**
+   * Effet de « Commencer » : si le titre est à l'écran, on passe d'abord par
+   * un écran sans paroles (intro) ; sinon, la ligne 1 s'affiche directement.
+   */
+  function demarrer(etat) {
+    if (etat.phase === 'chargee' && etat.titre) return { phase: 'intro', titre: false, ligne: null };
+    return { phase: 'jeu', titre: false, ligne: 0 };
   }
 
   /* Chaque action : condition pour être possible, et effet. */
@@ -47,15 +57,15 @@
       effet: (etat) => ({ titre: !etat.titre })
     },
     commencer: {
-      possible: (etat, chanson) => etat.phase === 'chargee' && chanson.lignes.length > 0,
-      effet: () => ({ phase: 'jeu', titre: false, ligne: 0 })
+      possible: (etat, chanson) => (etat.phase === 'chargee' || etat.phase === 'intro') && chanson.lignes.length > 0,
+      effet: demarrer
     },
     ligneSuivante: {
       possible: (etat, chanson) =>
-        etat.phase === 'chargee'
+        etat.phase === 'chargee' || etat.phase === 'intro'
           ? chanson.lignes.length > 0
           : etat.phase === 'jeu' && etat.ligne < derniereLigneAccessible(etat, chanson),
-      effet: (etat) => (etat.phase === 'chargee' ? { phase: 'jeu', titre: false, ligne: 0 } : { ligne: etat.ligne + 1 })
+      effet: (etat) => (etat.phase === 'jeu' ? { ligne: etat.ligne + 1 } : demarrer(etat))
     },
     lignePrecedente: {
       possible: (etat) => etat.phase === 'jeu' && etat.ligne > 0,

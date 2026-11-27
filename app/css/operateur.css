@@ -18,6 +18,9 @@ body.operateur { display: flex; flex-direction: column; height: 100vh; overflow:
 .bandeau-nom { font-size: 20px; font-weight: 700; letter-spacing: .02em; min-width: 0; }
 .voyants { display: flex; gap: 8px; flex: 1 1 auto; }
 .voyant {
+  font: inherit;
+  background: transparent;
+  cursor: pointer;
   font-size: 13px;
   padding: 3px 10px;
   border-radius: 99px;
@@ -25,6 +28,7 @@ body.operateur { display: flex; flex-direction: column; height: 100vh; overflow:
   color: var(--texte-3);
 }
 .voyant::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--texte-3); margin-right: 6px; }
+.voyant:hover { background: var(--panneau-2); }
 .voyant.ouvert { color: var(--texte); border-color: var(--avertissement); }
 .voyant.ouvert::before { background: var(--avertissement); }
 .voyant.ouvert.plein { border-color: var(--ok); }
@@ -133,7 +137,8 @@ body.operateur { display: flex; flex-direction: column; height: 100vh; overflow:
 .bouton-etape.secondaire { min-height: 46px; font-size: 16px; }
 .bouton-etape kbd { font-size: 13px; }
 .etape-message { color: var(--texte-2); padding: 12px 0; }
-button.annuler { width: calc(100% - 28px); margin-top: 12px; }
+.actions-chanson { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.actions-chanson button { padding: 8px 6px; }
 .cadre-a-venir { margin-top: 14px; padding: 10px 12px; border: 1px dashed var(--bord); border-radius: var(--rayon); color: var(--texte-3); }
 .cadre-a-venir h3 { font-size: 14px; color: var(--texte-2); }
 .cadre-a-venir p { margin: 4px 0 0; font-size: 13px; }

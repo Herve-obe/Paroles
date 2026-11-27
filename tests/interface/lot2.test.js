@@ -118,9 +118,13 @@ describe('Lot 2 : une chanson tapée dans l\'éditeur se déroule à l\'écran',
     await page.click('button[data-action="afficherTitre"]');
     assert.match(await page.textContent('.titre-antenne'), /Chanson d'essai : Groupe inventé/);
 
+    // Après le titre, « Commencer » passe par un écran sans paroles (intro).
     await page.click('button[data-action="commencer"]');
+    assert.equal(await texteEtape(page), 'Étape : Intro (écran sans paroles)');
+    assert.equal(await ligneAntenne(page), null);
+    assert.equal(await page.getAttribute('.ligne-op.suivante', 'data-ligne'), '0');
+    await page.click('button[data-action="ligneSuivante"]');
     assert.equal(await ligneAntenne(page), 0);
-    assert.equal(await page.locator('.titre-antenne').count(), 0, 'le titre disparaît');
     assert.equal(await texteEtape(page), 'Étape : Défilement');
     assert.equal(await page.getAttribute('.ligne-op.suivante', 'data-ligne'), '1');
   });
