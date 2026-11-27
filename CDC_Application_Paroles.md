@@ -57,17 +57,17 @@ Un opérateur pilote l'application depuis la régie. Elle remplit **six fonction
 Une seule fenêtre en 1920 × 1080, en trois zones :
 
 - **À gauche, la conduite :** la liste des chansons de l'émission dans l'ordre, avec pour chacune le candidat, la catégorie (thème à 10, 20, 30, 40 ou 50 points, « La même chanson », finale), le mode ORCHESTRE ou PLAYBACK, et l'état (à venir, en cours, jouée). Boutons : « Nouvelle chanson », « Modifier », « Charger », « Monter », « Descendre », « Supprimer », « Importer .txt », « Exporter la chanson ». Un clic sélectionne une chanson ; « Charger » (ou un double-clic) la prépare pour le direct.
-- **Au centre, la chanson en cours :** toutes les lignes, la ligne affichée à l'antenne surlignée, la ligne suivante repérée, le passage à trou encadré. Les mots à trouver restent lisibles en clair pour l'opérateur.
+- **Au centre, la chanson en cours :** toutes les lignes, la ligne affichée à l'antenne surlignée, la ligne suivante repérée, le passage à trou encadré. Les mots à trouver restent lisibles en clair pour l'opérateur. En bas de cette zone, côte à côte, l'aperçu de chaque écran de sortie, en temps réel.
 - **À droite, le pilotage :**
   - les gros boutons de l'étape en cours (section 3.3) ;
   - la zone de saisie de la proposition (section 6) ;
-  - les boutons de jokers avec le nombre restant pour le candidat (section 7) ;
-  - l'aperçu de chaque écran de sortie, en temps réel.
-- **Bandeau du haut :** nom de l'émission (réglable, affichage activable ou non), voyant par écran de sortie ouvert, boutons « Ouvrir un écran de sortie », « Noir », « Préférences », « Enregistrer l'émission ».
+  - les boutons de jokers avec le nombre restant pour le candidat (section 7).
+- **Bandeau du haut :** nom de l'émission (réglable, affichage activable ou non), voyant par écran de sortie (fermé, ouvert en fenêtre, ouvert en plein écran), boutons « Ouvrir un écran de sortie », « Noir », « Préférences », « Enregistrer l'émission ».
 
 ### 3.2 Écrans de sortie
 
-- Ouverts par le bouton « Ouvrir un écran de sortie », glissés sur l'écran voulu, puis mis en plein écran par un double-clic (le navigateur exige un geste de l'utilisateur).
+- Ouverts par le bouton « Ouvrir un écran de sortie », glissés sur l'écran voulu, puis mis en plein écran par un double-clic (le navigateur exige un geste de l'utilisateur) ; un second double-clic, ou Échap, quitte le plein écran. Le bouton est grisé quand les 2 écrans sont ouverts.
+- Une touche frappée sur un écran de sortie (qui a gardé le focus après le double-clic) agit comme sur l'écran opérateur.
 - Jusqu'à **2 écrans de sortie**, chacun avec son mode :
   - **Prompteur :** fond sombre, gros caractères, pour le candidat ;
   - **Incrustation :** paroles dans un bandeau en bas de l'image, sur un fond uni noir ou vert, pour l'incrustation à la régie vidéo. Le bandeau a toujours son propre fond opaque (couleur réglable) : le fond noir ou vert ne sert qu'autour du bandeau, pour que les mots verts ne soient jamais découpés par le chroma key.
@@ -396,6 +396,13 @@ Réponses du formateur aux questions de l'étape 1, déjà reportées dans les s
 | 27 | Livraison | Une pull request par lot, fusionnée par le formateur, puis test sur son PC (0) |
 
 Précision ajoutée pendant le lot 1 : un signe de ponctuation isolé entre deux espaces n'est pas un mot (4.3).
+
+Précisions ajoutées pendant le lot 3 :
+
+- aperçus des écrans de sortie placés côte à côte en bas de la zone centrale, pour laisser la place à la saisie et aux jokers à droite (3.1) ;
+- voyants : fermé, ouvert en fenêtre (orange), ouvert en plein écran (vert) ; bouton « Ouvrir un écran de sortie » grisé quand les 2 écrans sont ouverts (3.1, 3.2) ;
+- les touches frappées sur un écran de sortie sont transmises à l'écran opérateur (3.2) ;
+- le texte des mots à trouver n'est jamais envoyé aux écrans de sortie avant la révélation : seuls les « _ » le sont (5).
 
 Précisions ajoutées pendant le lot 2 :
 
