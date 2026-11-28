@@ -41,10 +41,15 @@ if (typeof require === 'function') require('../charger-noyau.js');
       egal(a.artiste, 'Groupe');
     });
 
+    test('titre puis « Commencer » : écran sans paroles (intro)', () => {
+      egal(calculer(['afficherTitre', 'commencer']).type, 'vide');
+    });
+
     test('« Commencer » : la ligne 1 en cours et la ligne 2 suivante', () => {
       const a = calculer(['commencer']);
       egal(a.type, 'paroles');
       egal(a.lignes.map((l) => l.role), ['courante', 'suivante']);
+      egal(a.lignes.map((l) => l.index), [0, 1], 'chaque ligne porte son numéro (pour le défilement)');
       egal(textes(a.lignes[0]), ['ligne', 'un']);
       egal(textes(a.lignes[1]), ['ligne', 'deux']);
     });
@@ -65,6 +70,7 @@ if (typeof require === 'function') require('../charger-noyau.js');
       const ligne = a.lignes[0];
       vrai(ligne.masquer);
       egal(ligne.mots, [{ texte: 'ligne', masque: false }, { texte: '_____', masque: true }]);
+      egal(ligne.index, 2);
     });
 
     test('le texte des mots à trouver n\'est jamais envoyé aux écrans de sortie avant la révélation', () => {
@@ -88,10 +94,16 @@ if (typeof require === 'function') require('../charger-noyau.js');
   });
 
   groupe('Préférences par défaut (section 11)', () => {
+    test('durées des transitions : fondu du titre et défilement des lignes', () => {
+      const p = P.preferences.creer();
+      egal(p.fonduTitre, 0.6);
+      egal(p.defilement, 0.35);
+    });
+
     test('écran 1 prompteur, écran 2 incrustation, 2 lignes, fond noir', () => {
       const p = P.preferences.creer();
       egal(p.ecrans, [{ mode: 'prompteur' }, { mode: 'incrustation' }]);
-      egal(p.nbLignes, 2);
+      egal(p.nbLignes, { prompteur: 2, incrustation: 1 }, 'incrustation : la ligne à chanter seule (retour d\'essai 0.3.1)');
       egal(p.fondIncrustation, '#000000');
       vrai(/^#[0-9a-f]{6}$/i.test(p.fondBandeau));
     });

@@ -11,6 +11,7 @@
   const NOMS_ETAPES = {
     aucune: 'Aucune chanson chargée',
     chargee: 'Chanson chargée',
+    intro: 'Intro (écran sans paroles)',
     defilement: 'Défilement',
     trou: 'Passage à trou'
   };
@@ -23,6 +24,10 @@
         return [
           { action: 'afficherTitre', libelle: titreAffiche ? 'Masquer le titre' : 'Afficher le titre' },
           { action: 'commencer', libelle: 'Commencer', style: 'principal', raccourci: 'etapeSuivante' }
+        ];
+      case 'intro':
+        return [
+          { action: 'ligneSuivante', libelle: 'Afficher la première ligne', style: 'principal' }
         ];
       case 'defilement':
         return [
@@ -82,6 +87,7 @@
     });
 
     document.getElementById('btn-annuler').disabled = !app.historique.peutAnnuler();
+    document.getElementById('btn-arreter').disabled = !chanson;
   }
 
   function installer(app) {
@@ -90,6 +96,7 @@
       if (bouton && !bouton.disabled) app.action(bouton.dataset.action);
     });
     document.getElementById('btn-annuler').addEventListener('click', () => app.annuler());
+    document.getElementById('btn-arreter').addEventListener('click', () => app.arreterChanson());
   }
 
   Paroles.pilotage = { afficher, installer };

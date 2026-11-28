@@ -4,8 +4,16 @@
  * opérateur : ils montrent exactement la même chose.
  *
  * Tout est dessiné sur une « scène » de 1920 × 1080 points, ensuite mise à
- * l'échelle de la fenêtre ou de l'aperçu. La mise en page est donc
- * identique quelle que soit la taille réelle.
+ * l'échelle de la fenêtre ou de l'aperçu.
+ *
+ * Transitions (section 5) :
+ * - le titre apparaît et disparaît en fondu ;
+ * - les paroles défilent du bas vers le haut : la ligne à chanter est au
+ *   milieu de l'écran, la suivante en dessous, plus petite et plus foncée.
+ *   Chaque ligne garde son élément d'un affichage à l'autre et glisse vers
+ *   sa nouvelle place (le mouvement démarre immédiatement) ; la ligne qui
+ *   vient d'être chantée disparaît aussitôt ;
+ * - « Noir » coupe tout, sans fondu.
  */
 (function (racine) {
   'use strict';
@@ -15,10 +23,39 @@
   const LARGEUR = 1920;
   const HAUTEUR = 1080;
 
-  /** Crée une ligne de paroles déjà préparée par le module « affichage ». */
-  function ligne(ligneAffichee) {
-    const element = document.createElement('div');
-    element.className = 'ligne-paroles ligne-sortie ajustable ' + ligneAffichee.role;
+  /*
+   * Places des lignes, en points, pour chaque mode :
+   *   pas[r]     : décalage vertical de la ligne de rang r (0 = ligne à chanter)
+   *   echelle[r] : taille relative (la ligne suivante est plus petite)
+   *   opacite[r] : la ligne suivante est plus foncée
+   *   sortie     : position de départ d'une ligne qui revient par le haut (retour en arrière)
+   *   entree     : distance sous la dernière place d'où arrive une nouvelle ligne
+   */
+  const GEOMETRIE = {
+    prompteur: { pas: [0, 140, 245, 345], echelle: [1, 0.72, 0.62, 0.55], opacite: [1, 0.5, 0.38, 0.3], sortie: -150, entree: 110 },
+    incrustation: { pas: [0, 84, 148, 210], echelle: [1, 0.74, 0.64, 0.58], opacite: [1, 0.58, 0.45, 0.38], sortie: -95, entree: 70 }
+  };
+
+  /** Nombre de lignes montrées par un écran, selon son mode (préférences). */
+  function nombreDeLignes(prefs, mode) {
+    const n = prefs.nbLignes;
+    if (typeof n === 'number') return n;
+    if (n && n[mode]) return n[mode];
+    return mode === 'incrustation' ? 1 : 2;
+  }
+
+  /* Hauteur du bandeau d'incrustation selon le nombre de lignes affichées. */
+  const HAUTEUR_BANDEAU = { 1: 140, 2: 210, 3: 270 };
+
+  function div(classe) {
+    const d = document.createElement('div');
+    d.className = classe;
+    return d;
+  }
+
+  /** Remplit l'élément d'une ligne avec ses mots (masqués ou non). */
+  function remplirLigne(element, ligneAffichee) {
+    element.textContent = '';
     ligneAffichee.mots.forEach((mot) => {
       if (element.firstChild) element.appendChild(document.createTextNode(' '));
       const span = document.createElement('span');
@@ -26,7 +63,139 @@
       span.textContent = mot.texte;
       element.appendChild(span);
     });
-    return element;
+    element.dataset.signature = JSON.stringify(ligneAffichee.mots);
+  }
+
+  /**
+   * Taille automatique (section 5) : une ligne trop longue voit sa taille
+   * de texte diminuer pour tenir sur une seule ligne ; un mot n'est jamais coupé.
+   */
+  function ajusterTaille(element) {
+    element.style.fontSize = '';
+    const disponible = element.clientWidth;
+    const necessaire = element.scrollWidth;
+    if (disponible > 0 && necessaire > disponible) {
+      const taille = parseFloat(getComputedStyle(element).fontSize);
+      element.style.fontSize = Math.floor(taille * (disponible / necessaire) * 0.98) + 'px';
+    }
+  }
+
+  function ajusterTailles(scene) {
+    scene.querySelectorAll('.ajustable').forEach(ajusterTaille);
+  }
+
+  /** Place une ligne, avec ou sans mouvement. */
+  function placer(element, y, echelle, opacite, duree) {
+    element.style.transition = duree > 0 ? 'transform ' + duree + 's ease-out, opacity ' + duree + 's ease-out' : 'none';
+    element.style.transform = 'translateY(' + y + 'px) scale(' + echelle + ')';
+    element.style.opacity = String(opacite);
+  }
+
+  /** Crée (une seule fois par scène et par mode) les éléments fixes de la scène. */
+  function structure(scene, mode) {
+    if (scene.etatRendu && scene.etatRendu.mode === mode) return scene.etatRendu;
+    if (scene.etatRendu) {
+      clearTimeout(scene.etatRendu.minuteurTitre);
+      clearTimeout(scene.etatRendu.minuteurParoles);
+    }
+    scene.textContent = '';
+    const cadre = div(mode === 'incrustation' ? 'cadre bandeau-incrustation' : 'cadre');
+    const titre = div('calque calque-titre');
+    const paroles = div('calque calque-paroles');
+    cadre.append(titre, paroles);
+    scene.appendChild(cadre);
+    scene.etatRendu = { mode, cadre, titre, paroles, lignes: new Map(), cleTitre: null, minuteurTitre: null, minuteurParoles: null, dernierCourant: null };
+    return scene.etatRendu;
+  }
+
+  /** Titre et artiste, en fondu. */
+  function dessinerTitre(r, a, fondu) {
+    if (a.type === 'titre') {
+      clearTimeout(r.minuteurTitre);
+      const cle = a.titre + '\n' + (a.artiste || '');
+      if (r.cleTitre !== cle) {
+        r.titre.textContent = '';
+        const bloc = div('titre-sortie');
+        const titre = div('titre ajustable');
+        titre.textContent = a.titre;
+        bloc.appendChild(titre);
+        if (a.artiste) {
+          const artiste = div('artiste ajustable');
+          artiste.textContent = a.artiste;
+          bloc.appendChild(artiste);
+        }
+        r.titre.appendChild(bloc);
+        r.cleTitre = cle;
+        ajusterTailles(r.titre);
+      }
+      r.titre.classList.add('visible');
+    } else if (r.cleTitre !== null) {
+      r.titre.classList.remove('visible');
+      clearTimeout(r.minuteurTitre);
+      // Le contenu est retiré une fois le fondu terminé.
+      r.minuteurTitre = setTimeout(() => { r.titre.textContent = ''; r.cleTitre = null; }, fondu * 1000 + 60);
+    }
+  }
+
+  /** Lignes de paroles : défilement du bas vers le haut. */
+  function dessinerParoles(r, a, mode, duree, nombre) {
+    if (a.type !== 'paroles') {
+      if (r.lignes.size || r.paroles.classList.contains('visible')) {
+        r.paroles.classList.remove('visible');
+        clearTimeout(r.minuteurParoles);
+        r.minuteurParoles = setTimeout(() => {
+          r.lignes.forEach((el) => el.remove());
+          r.lignes.clear();
+          r.dernierCourant = null;
+        }, duree * 1000 + 60);
+      }
+      return;
+    }
+
+    clearTimeout(r.minuteurParoles);
+    r.paroles.classList.add('visible');
+    const g = GEOMETRIE[mode];
+    const dernierRang = g.pas.length - 1;
+    // Seules les lignes de ce mode d'écran (l'incrustation : la ligne à chanter seule).
+    const lignes = a.lignes.slice(0, Math.max(1, nombre));
+    // Incrustation : le bloc de lignes est centré verticalement dans le bandeau.
+    const decalage = mode === 'incrustation' ? -g.pas[lignes.length - 1] / 2 : 0;
+    const courant = lignes.length ? lignes[0].index : 0;
+    const monte = r.dernierCourant === null || courant >= r.dernierCourant;
+    r.dernierCourant = courant;
+    const affichees = new Set(lignes.map((l) => l.index));
+
+    // Lignes qui quittent l'écran : elles disparaissent aussitôt (demande du
+    // formateur : la ligne qui vient d'être chantée n'est plus affichée, seules
+    // la ligne à chanter et la suivante restent visibles, même pendant le mouvement).
+    r.lignes.forEach((element, index) => {
+      if (affichees.has(index)) return;
+      element.remove();
+      r.lignes.delete(index);
+    });
+
+    // Lignes affichées : nouvelles (elles arrivent par le bas) ou déplacées.
+    lignes.forEach((ligne, rang) => {
+      const place = Math.min(rang, dernierRang);
+      let element = r.lignes.get(ligne.index);
+      if (!element) {
+        element = div('ligne-paroles ligne-sortie ajustable');
+        element.dataset.index = String(ligne.index);
+        remplirLigne(element, ligne);
+        r.paroles.appendChild(element);
+        r.lignes.set(ligne.index, element);
+        ajusterTaille(element);
+        const depart = (monte ? g.pas[Math.min(rang + 1, dernierRang)] + g.entree : g.sortie) + decalage;
+        placer(element, depart, g.echelle[place], 0, 0);
+        void element.offsetWidth; // position de départ prise en compte avant le mouvement
+      } else if (element.dataset.signature !== JSON.stringify(ligne.mots)) {
+        remplirLigne(element, ligne);
+        ajusterTaille(element);
+      }
+      element.classList.remove('courante', 'suivante');
+      element.classList.add(rang === 0 ? 'courante' : 'suivante');
+      placer(element, g.pas[place] + decalage, g.echelle[place], g.opacite[place], duree);
+    });
   }
 
   /**
@@ -40,60 +209,40 @@
     const reglage = prefs.ecrans[numeroEcran - 1] || { mode: 'prompteur' };
     const mode = reglage.mode === 'incrustation' ? 'incrustation' : 'prompteur';
     const a = message.affichage;
+    const fondu = typeof prefs.fonduTitre === 'number' ? prefs.fonduTitre : 0.6;
+    const duree = typeof prefs.defilement === 'number' ? prefs.defilement : 0.35;
 
+    const r = structure(scene, mode);
     scene.dataset.mode = mode;
     scene.style.setProperty('--fond-incrustation', prefs.fondIncrustation);
     scene.style.setProperty('--fond-bandeau', prefs.fondBandeau);
-    scene.textContent = '';
+    scene.style.setProperty('--fondu-titre', fondu + 's');
+    scene.style.setProperty('--fondu-paroles', duree + 's');
+    const nombre = nombreDeLignes(prefs, mode);
+    if (mode === 'incrustation') r.cadre.style.height = (HAUTEUR_BANDEAU[nombre] || HAUTEUR_BANDEAU[1]) + 'px';
 
-    // « Noir » ou rien à montrer : prompteur noir, incrustation réduite à son fond.
-    if (a.noir || a.type === 'vide') return;
+    // « Noir » : coupure franche, sans fondu.
+    scene.classList.toggle('noir', !!a.noir);
+    // Le bandeau d'incrustation disparaît en fondu quand il n'y a rien à montrer.
+    r.cadre.classList.toggle('visible', a.type === 'titre' || a.type === 'paroles');
 
-    let conteneur = scene;
-    if (mode === 'incrustation') {
-      conteneur = document.createElement('div');
-      conteneur.className = 'bandeau-incrustation';
-      scene.appendChild(conteneur);
-    }
-
-    if (a.type === 'titre') {
-      const bloc = document.createElement('div');
-      bloc.className = 'titre-sortie';
-      const titre = document.createElement('div');
-      titre.className = 'titre ajustable';
-      titre.textContent = a.titre;
-      bloc.appendChild(titre);
-      if (a.artiste) {
-        const artiste = document.createElement('div');
-        artiste.className = 'artiste ajustable';
-        artiste.textContent = a.artiste;
-        bloc.appendChild(artiste);
-      }
-      conteneur.appendChild(bloc);
-    } else if (a.type === 'paroles') {
-      const bloc = document.createElement('div');
-      bloc.className = 'paroles-sortie';
-      a.lignes.forEach((l) => bloc.appendChild(ligne(l)));
-      conteneur.appendChild(bloc);
-    }
-
-    ajusterTailles(scene);
+    dessinerTitre(r, a, fondu);
+    dessinerParoles(r, a, mode, duree, nombre);
   }
 
-  /**
-   * Taille automatique (section 5) : une ligne trop longue voit sa taille
-   * de texte diminuer pour tenir sur une seule ligne ; un mot n'est jamais coupé.
-   */
-  function ajusterTailles(scene) {
-    scene.querySelectorAll('.ajustable').forEach((element) => {
-      element.style.fontSize = '';
-      const disponible = element.clientWidth;
-      const necessaire = element.scrollWidth;
-      if (disponible > 0 && necessaire > disponible) {
-        const taille = parseFloat(getComputedStyle(element).fontSize);
-        element.style.fontSize = Math.floor(taille * (disponible / necessaire) * 0.98) + 'px';
-      }
-    });
+  /** Texte réellement visible, dans l'ordre de la chanson : sert aux tests. */
+  function texteVisible(scene) {
+    const r = scene.etatRendu;
+    if (!r || scene.classList.contains('noir')) return '';
+    const morceaux = [];
+    if (r.titre.classList.contains('visible')) morceaux.push(r.titre.textContent);
+    if (r.paroles.classList.contains('visible')) {
+      // Ordre de la chanson (l'ordre dans la page peut différer après un retour en arrière).
+      Array.from(r.paroles.querySelectorAll('.ligne-sortie'))
+        .sort((x, y) => Number(x.dataset.index) - Number(y.dataset.index))
+        .forEach((l) => morceaux.push(l.textContent));
+    }
+    return morceaux.join(' ').replace(/\s+/g, ' ').trim();
   }
 
   /**
@@ -109,5 +258,5 @@
     scene.style.transform = 'translate(' + decalageX + 'px, ' + decalageY + 'px) scale(' + echelle + ')';
   }
 
-  Paroles.renduSortie = { LARGEUR, HAUTEUR, dessiner, mettreALEchelle, ajusterTailles };
+  Paroles.renduSortie = { LARGEUR, HAUTEUR, dessiner, mettreALEchelle, ajusterTailles, texteVisible };
 })(typeof globalThis !== 'undefined' ? globalThis : window);

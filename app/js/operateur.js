@@ -82,6 +82,28 @@
       app.historique.vider();
     },
 
+    /**
+     * « Arrêter la chanson » : ferme la chanson en cours et vide les écrans.
+     * Confirmation dans la page si la chanson a commencé.
+     */
+    async arreterChanson() {
+      const chanson = app.chansonCourante();
+      if (!chanson) return;
+      if (app.chansonEnCours()) {
+        const ok = await P.dialogues.confirmer(
+          'Arrêter la chanson ?',
+          '« ' + chanson.titre + ' » sera fermée et les écrans de sortie se videront. Elle redeviendra « à venir » dans la conduite.',
+          'Arrêter la chanson',
+          'danger'
+        );
+        if (!ok) return;
+      }
+      if (P.emission.etat(app.emission, chanson.id) === 'en_cours') P.emission.definirEtat(app.emission, chanson.id, 'a_venir');
+      app.dechargerChanson();
+      app.rafraichir();
+      P.dialogues.notifier('Chanson arrêtée.');
+    },
+
     /** Plus aucune chanson chargée (après suppression de la chanson chargée). */
     dechargerChanson() {
       app.courante = null;
@@ -105,7 +127,7 @@
           app.action(action);
           break;
         case 'etapeSuivante':
-          if (etape === 'chargee') app.action('commencer');
+          if (etape === 'chargee' || etape === 'intro') app.action('commencer');
           break;
         case 'chansonPrecedente':
         case 'chansonSuivante': {
@@ -126,6 +148,9 @@
           break;
         case 'ouvrirEcran':
           P.sorties.ouvrir();
+          break;
+        case 'arreter':
+          app.arreterChanson();
           break;
         default:
           break;
@@ -157,6 +182,10 @@
     avant: (e) => P.dialogues.gererClavier(e) || P.editeur.gererClavier(e)
   });
   P.raccourcis.afficherAideMemoire(document.getElementById('aide-memoire'));
+
+  // Numéro de version, à vérifier avant tout essai (protocole de livraison).
+  document.getElementById('version').textContent = 'version ' + P.VERSION;
+  document.title = 'Paroles ' + P.VERSION + ' : écran opérateur';
 
   // Accès pour les tests automatiques de l'interface.
   P.app = app;

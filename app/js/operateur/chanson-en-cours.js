@@ -61,6 +61,16 @@
       zone.appendChild(titre);
     }
 
+    // Intro : écran sans paroles entre le titre et la première ligne.
+    if (app.jeu.phase === 'intro') {
+      const intro = document.createElement('div');
+      intro.className = 'titre-antenne';
+      const strong = document.createElement('strong');
+      strong.textContent = 'Intro : écran sans paroles';
+      intro.append(strong, document.createTextNode('La première ligne est prête : « Afficher la première ligne » ou Espace.'));
+      zone.appendChild(intro);
+    }
+
     // Lignes, avec le passage à trou dans un cadre.
     const trou = P.chanson.passage(chanson);
     const suivante = P.jeu.ligneSuivanteIndex(app.jeu, chanson);

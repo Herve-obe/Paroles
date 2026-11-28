@@ -41,6 +41,7 @@
   const liaison = P.liaison.creer((message) => {
     if (message.type === 'etat') afficher(message);
     else if (message.type === 'appel') signalerPresence(); // l'opérateur vient de (re)démarrer
+    else if (message.type === 'fermer' && message.ecran === numero) window.close(); // clic sur le voyant
   });
 
   /** Envoi vers l'écran opérateur (canal de diffusion + fenêtre qui m'a ouvert). */
@@ -65,8 +66,11 @@
   setInterval(signalerPresence, 1000);
   window.addEventListener('pagehide', () => envoyer({ type: 'au-revoir' }));
 
-  /* Plein écran par double-clic ; pas de curseur ni d'aide en plein écran. */
+  /* Plein écran par double-clic ; pas de curseur ni d'aide en plein écran.
+     Le double-clic ne doit sélectionner aucun mot. */
+  document.addEventListener('mousedown', (e) => { if (e.detail > 1) e.preventDefault(); });
   document.addEventListener('dblclick', () => {
+    if (window.getSelection) window.getSelection().removeAllRanges();
     if (document.fullscreenElement) document.exitFullscreen();
     else document.documentElement.requestFullscreen().catch(() => {});
   });

@@ -62,12 +62,13 @@ Une seule fenêtre en 1920 × 1080, en trois zones :
   - les gros boutons de l'étape en cours (section 3.3) ;
   - la zone de saisie de la proposition (section 6) ;
   - les boutons de jokers avec le nombre restant pour le candidat (section 7).
-- **Bandeau du haut :** nom de l'émission (réglable, affichage activable ou non), voyant par écran de sortie (fermé, ouvert en fenêtre, ouvert en plein écran), boutons « Ouvrir un écran de sortie », « Noir », « Préférences », « Enregistrer l'émission ».
+- **Bandeau du haut :** nom de l'émission (réglable, affichage activable ou non), voyant par écran de sortie (fermé, ouvert en fenêtre, ouvert en plein écran ; un clic sur le voyant ouvre cet écran s'il est fermé, ou le ferme après confirmation s'il est ouvert), boutons « Ouvrir un écran de sortie », « Noir », « Préférences », « Enregistrer l'émission ».
 
 ### 3.2 Écrans de sortie
 
 - Ouverts par le bouton « Ouvrir un écran de sortie », glissés sur l'écran voulu, puis mis en plein écran par un double-clic (le navigateur exige un geste de l'utilisateur) ; un second double-clic, ou Échap, quitte le plein écran. Le bouton est grisé quand les 2 écrans sont ouverts.
 - Une touche frappée sur un écran de sortie (qui a gardé le focus après le double-clic) agit comme sur l'écran opérateur.
+- Un double-clic sur un écran de sortie ne sélectionne jamais de texte.
 - Jusqu'à **2 écrans de sortie**, chacun avec son mode :
   - **Prompteur :** fond sombre, gros caractères, pour le candidat ;
   - **Incrustation :** paroles dans un bandeau en bas de l'image, sur un fond uni noir ou vert, pour l'incrustation à la régie vidéo. Le bandeau a toujours son propre fond opaque (couleur réglable) : le fond noir ou vert ne sert qu'autour du bandeau, pour que les mots verts ne soient jamais découpés par le chroma key.
@@ -83,13 +84,14 @@ L'écran opérateur ne montre en grand que les boutons utiles à l'étape en cou
 | Étape | Boutons principaux |
 |:---|:---|
 | Chanson chargée | « Afficher le titre », « Commencer » |
+| Intro (écran sans paroles, après le titre) | « Afficher la première ligne » |
 | Défilement | « Ligne suivante », « Ligne précédente » |
 | Passage à trou | « Ligne suivante », « Saisir la proposition » |
 | Saisie | Champs de saisie, « Joker 2 mots », « Joker 3 propositions », « Bloquer » |
 | Bloqué | « Révéler le mot suivant », « Tout révéler », « Débloquer » |
 | Révélé | « Chanson suivante », « Rejouer la chanson », et « Ligne suivante » s'il reste des lignes après le passage à trou |
 
-« Noir » (vide tous les écrans de sortie, un second clic réaffiche) et « Annuler la dernière action » restent toujours accessibles.
+« Noir » (vide tous les écrans de sortie, un second clic réaffiche) et « Annuler la dernière action » restent toujours accessibles, ainsi que « Arrêter la chanson » dès qu'une chanson est chargée : elle ferme la chanson et vide les écrans (confirmation dans la page si la chanson a commencé) ; la chanson redevient « à venir » dans la conduite.
 
 **« Annuler la dernière action »** couvre toutes les actions de jeu : changement de ligne, case validée, joker, blocage, mot révélé, bascule juste ou faux. Elle ne revient pas lettre par lettre sur la frappe. L'historique est limité à la chanson en cours.
 
@@ -151,11 +153,13 @@ Une ligne après le trou (facultative)
 
 ## 5. Fonction 2 : faire défiler les paroles
 
-- « Afficher le titre » montre le titre et l'artiste ; un second clic (« Masquer le titre ») le retire. « Commencer » affiche la ligne 1 bien visible et la ligne 2 atténuée.
-- « Ligne suivante » (ou Espace) affiche la ligne suivante immédiatement, sans animation qui retarde (moins de 50 ms entre le clic et l'affichage). Sur une chanson chargée, « Ligne suivante » équivaut à « Commencer ». Une touche maintenue enfoncée ne répète pas l'action.
+- « Afficher le titre » montre le titre et l'artiste, en fondu ; un second clic (« Masquer le titre ») le retire.
+- « Commencer » : si le titre est à l'écran, il disparaît en fondu vers un écran sans paroles (intro musicale), puis « Afficher la première ligne » (ou Espace, ou Entrée) affiche la ligne 1 ; si le titre n'est pas à l'écran, la ligne 1 s'affiche directement.
+- **Défilement :** les paroles montent du bas vers le haut. Sur le prompteur, la ligne à chanter est au milieu de l'écran, la ligne suivante en dessous, plus petite et plus foncée ; dans le bandeau d'incrustation, seule la ligne à chanter est affichée, centrée verticalement dans le bandeau, et la nouvelle ligne arrive par le bas. La ligne qui vient d'être chantée n'est pas affichée, même pendant le mouvement : seules la ligne à chanter et (sur le prompteur) la ligne suivante sont visibles. Le mouvement démarre immédiatement et dure 0,35 s par défaut (réglable, 0 = affichage sec).
+- « Ligne suivante » (ou Espace) lance le passage à la ligne suivante immédiatement (moins de 50 ms entre le clic et le début du mouvement). Sur une chanson chargée, « Ligne suivante » équivaut à « Commencer ». Une touche maintenue enfoncée ne répète pas l'action.
 - Avant la révélation, le défilement s'arrête à la dernière ligne du passage à trou. S'il y a des lignes après le passage à trou, « Ligne suivante » redevient disponible une fois la réponse révélée, et les affiche normalement.
 - De la saisie à la révélation, les écrans de sortie montrent toutes les lignes du passage à trou ensemble, même si le réglage est sur 1 ligne, et ne montrent plus de ligne suivante.
-- Les écrans de sortie montrent 2 lignes par défaut : la ligne en cours bien visible, la suivante atténuée (réglable à 1 ou 3 lignes).
+- Le prompteur montre 2 lignes par défaut : la ligne en cours bien visible, la suivante atténuée (réglable à 1 ou 3 lignes). L'incrustation montre la ligne en cours seule (réglable aussi).
 - « Ligne précédente » permet de corriger une erreur à tout moment.
 - Quand une ligne du passage à trou arrive, les mots à trouver sont remplacés par des `_` :
   - **un `_` par lettre** (accentuée ou non) ou par chiffre ;
@@ -263,12 +267,14 @@ Le résultat calculé est **une suggestion** : avant et pendant la révélation,
 | Éléments affichés | Activer ou désactiver chaque élément : nom de l'émission (bandeau opérateur), artiste sur l'écran titre, thème sur l'écran titre, nom du candidat sur l'écran titre, ligne suivante atténuée, textes du statut, aide-mémoire des raccourcis, aperçus des écrans de sortie | Tout activé, sauf thème et nom du candidat sur l'écran titre |
 | Jokers par candidat | Nombre de « 2 mots » et de « 3 propositions », de 0 à 5 | 1 et 1 |
 | Mode de chaque écran de sortie | Prompteur / Incrustation | Écran 1 prompteur, écran 2 incrustation |
-| Nombre de lignes affichées | 1, 2, 3 | 2 |
+| Nombre de lignes affichées, par mode d'écran | 1, 2, 3 | Prompteur : 2 ; incrustation : 1 |
 | Taille du texte | Automatique ou fixe | Automatique |
 | Fond de l'incrustation | Noir, vert, couleur libre | Noir |
 | Fond du bandeau d'incrustation | Couleur libre (opaque) | Bleu nuit |
 | Couleurs | Proposé, bloqué, juste, faux, correction | Jaune, bleu, vert, rouge, blanc sur rouge |
 | Délai avant correction d'un mot faux | 0 à 5 s | 1,5 s |
+| Durée du fondu du titre | 0 à 2 s | 0,6 s |
+| Durée du défilement des lignes | 0 à 1 s (0 = affichage sec) | 0,35 s |
 | Jokers à « Rejouer la chanson » | Choix proposé par défaut : rendre / garder | Rendre |
 | Textes du statut | Texte libre | « Bonne réponse », « Mauvaise réponse » |
 | Accents à la comparaison | Tolérant / strict | Tolérant |
@@ -396,6 +402,22 @@ Réponses du formateur aux questions de l'étape 1, déjà reportées dans les s
 | 27 | Livraison | Une pull request par lot, fusionnée par le formateur, puis test sur son PC (0) |
 
 Précision ajoutée pendant le lot 1 : un signe de ponctuation isolé entre deux espaces n'est pas un mot (4.3).
+
+Retours du formateur après l'essai de la version 0.3.1 (27 novembre 2026) :
+
+- validés : ouverture et fermeture des écrans par les voyants, fondu du titre, « Arrêter la chanson », fluidité des effets ;
+- prompteur conservé tel quel (la ligne chantée disparaît aussitôt) : l'effet « rouleau » envisagé pour le lot 4 est abandonné ;
+- incrustation : la ligne à chanter seule, sans la suivante, centrée verticalement dans le bandeau (5, 11) ;
+- choix de la couleur du fond d'incrustation : au lot 6, comme prévu.
+
+Retours du formateur après le premier essai du lot 3 (27 novembre 2026) :
+
+- voyants des écrans de sortie cliquables : ouvrir ou fermer chaque écran au choix (3.1) ;
+- le double-clic sur un écran de sortie ne sélectionne plus de texte (3.2) ;
+- après le titre, passage par un écran sans paroles (intro) avant la première ligne, avec un fondu (3.3, 5) ;
+- défilement des paroles du bas vers le haut, ligne à chanter au milieu de l'écran, ligne suivante en dessous, plus petite et plus foncée (5) ;
+- bouton « Arrêter la chanson » (3.3) ;
+- la ligne qui vient d'être chantée n'est plus affichée au-dessus de la ligne à chanter, même pendant le défilement (5).
 
 Précisions ajoutées pendant le lot 3 :
 

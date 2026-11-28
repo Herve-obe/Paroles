@@ -1,0 +1,47 @@
+# Intégration continue de « Paroles » (protocole de livraison, étape 7).
+# À chaque envoi sur GitHub : tests des règles, tests de l'interface dans
+# Chromium, puis mise à disposition du dossier de l'application à
+# télécharger (artefact « Paroles-app-test », conservé 30 jours).
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Récupération du dépôt
+        uses: actions/checkout@v4
+
+      - name: Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Tests des règles (npm test)
+        run: npm test
+
+      - name: Installation de Playwright et de Chromium (tests seulement)
+        run: |
+          npm install --no-save playwright@1.63.0
+          npx playwright install --with-deps chromium
+
+      - name: Tests de l'interface (npm run test:interface)
+        run: npm run test:interface
+
+      - name: Préparation du dossier à télécharger
+        run: |
+          mkdir -p livraison/Paroles
+          cp -r app LISEZMOI.md livraison/Paroles/
+
+      - name: Dossier de l'application à télécharger
+        uses: actions/upload-artifact@v4
+        with:
+          name: Paroles-app-test
+          path: livraison
+          retention-days: 30

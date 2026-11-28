@@ -10,8 +10,10 @@
  * Contenu envoyé :
  *   { noir: bool, type: 'vide' }
  *   { noir: bool, type: 'titre', titre, artiste }
- *   { noir: bool, type: 'paroles', lignes: [ { role: 'courante' | 'suivante',
+ *   { noir: bool, type: 'paroles', lignes: [ { index, role: 'courante' | 'suivante',
  *       masquer: bool, mots: [ { texte, masque: bool } ] } ] }
+ * « index » est le numéro de la ligne dans la chanson : il permet aux écrans
+ * de sortie de faire défiler les lignes au lieu de les redessiner.
  */
 (function (racine) {
   'use strict';
@@ -45,12 +47,13 @@
     if (jeu.phase === 'chargee') {
       return jeu.titre ? { noir, type: 'titre', titre: chanson.titre, artiste: chanson.artiste } : { noir, type: 'vide' };
     }
+    if (jeu.phase === 'intro') return { noir, type: 'vide' }; // écran sans paroles entre titre et ligne 1
 
     const nombre = p.ligneSuivante === false ? 1 : p.nbLignes || 2;
     const trou = Paroles.chanson.passage(chanson);
     const lignes = Paroles.jeu.lignesVisibles(jeu, chanson, nombre).map((index, rang) => {
       const masquer = !!trou && index >= trou.debut && index <= trou.fin && jeu.phase !== 'revele';
-      return { role: rang === 0 ? 'courante' : 'suivante', masquer, mots: motsAffiches(chanson.lignes[index], masquer) };
+      return { index, role: rang === 0 ? 'courante' : 'suivante', masquer, mots: motsAffiches(chanson.lignes[index], masquer) };
     });
     return { noir, type: 'paroles', lignes };
   }

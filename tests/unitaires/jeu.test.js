@@ -34,15 +34,33 @@ if (typeof require === 'function') require('../charger-noyau.js');
       faux(apres(['afficherTitre', 'afficherTitre']).titre);
     });
 
-    test('« Commencer » affiche la ligne 1 et masque le titre', () => {
-      const etat = apres(['afficherTitre', 'commencer']);
+    test('« Commencer » sans titre affiché : la ligne 1 directement (décision 5)', () => {
+      const etat = apres(['commencer']);
       egal(etat.ligne, 0);
-      faux(etat.titre);
       egal(jeu.etape(etat, chanson), 'defilement');
+    });
+
+    test('« Commencer » avec le titre affiché : écran sans paroles (intro), titre masqué', () => {
+      const etat = apres(['afficherTitre', 'commencer']);
+      egal(jeu.etape(etat, chanson), 'intro');
+      egal(etat.ligne, null);
+      faux(etat.titre);
+      egal(jeu.lignesVisibles(etat, chanson, 2), []);
+      egal(jeu.ligneSuivanteIndex(etat, chanson), 0, 'la ligne 1 est repérée comme suivante');
+    });
+
+    test('depuis l\'intro, « Ligne suivante » ou « Commencer » affiche la ligne 1', () => {
+      egal(apres(['afficherTitre', 'commencer', 'ligneSuivante']).ligne, 0);
+      egal(apres(['afficherTitre', 'commencer', 'commencer']).ligne, 0);
+    });
+
+    test('pendant l\'intro, « Ligne précédente » est impossible', () => {
+      faux(jeu.possible(apres(['afficherTitre', 'commencer']), chanson, 'lignePrecedente'));
     });
 
     test('« Ligne suivante » sur une chanson chargée équivaut à « Commencer »', () => {
       egal(apres(['ligneSuivante']).ligne, 0);
+      egal(jeu.etape(apres(['afficherTitre', 'ligneSuivante']), chanson), 'intro');
     });
 
     test('le titre ne peut plus être affiché une fois la chanson commencée', () => {

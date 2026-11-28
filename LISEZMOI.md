@@ -4,6 +4,8 @@ Application locale qui pilote l'affichage des paroles et du jeu depuis la régie
 
 La référence est le cahier des charges : [CDC_Application_Paroles.md](CDC_Application_Paroles.md).
 
+Version 0.3.2 · Édition du 27 novembre 2026. Le numéro de version est affiché en haut à gauche de l'écran opérateur ; l'historique est dans [docs/etat-avancement.md](docs/etat-avancement.md).
+
 > **Version provisoire (lot 3 sur 7).** Disponible : la conduite, l'éditeur de chansons, l'import et l'export `.txt`, le défilement des lignes, les 2 écrans de sortie (prompteur et incrustation), « Noir ». À venir : saisie et révélation (lot 4), jokers (lot 5), préférences et sauvegarde (lot 6). **Rien n'est encore sauvegardé** : un rechargement de la page vide la conduite (la sauvegarde arrive au lot 6). Gardez vos chansons en fichiers `.txt` avec « Exporter la chanson ».
 
 ## Lancer l'application
@@ -17,9 +19,9 @@ La référence est le cahier des charges : [CDC_Application_Paroles.md](CDC_Appl
 1. Cliquez sur « Ouvrir un écran de sortie » (ou F2) : l'écran 1 s'ouvre dans une fenêtre. Cliquez une seconde fois pour l'écran 2.
 2. Glissez chaque fenêtre sur l'écran voulu (prompteur du candidat, entrée de la régie vidéo).
 3. Double-cliquez dans la fenêtre : elle passe en plein écran, sans curseur ni texte. Un second double-clic (ou Échap) en sort.
-4. Les voyants du bandeau indiquent l'état de chaque écran : gris = fermé, orange = ouvert en fenêtre, vert = ouvert en plein écran.
+4. Les voyants du bandeau indiquent l'état de chaque écran : gris = fermé, orange = ouvert en fenêtre, vert = ouvert en plein écran. **Un clic sur un voyant** ouvre cet écran s'il est fermé, ou le ferme (après confirmation) s'il est ouvert.
 
-Par défaut, l'écran 1 est le **prompteur** (fond noir, gros caractères) et l'écran 2 l'**incrustation** (bandeau en bas de l'image sur fond noir ; le bandeau a son propre fond opaque, donc les mots verts ne sont jamais découpés par une incrustation sur fond vert). Les réglages (mode de chaque écran, fond vert, nombre de lignes) arrivent au lot 6.
+Par défaut, l'écran 1 est le **prompteur** (fond noir, gros caractères, la ligne à chanter au milieu et la suivante en dessous) et l'écran 2 l'**incrustation** (bandeau en bas de l'image sur fond noir, avec la ligne à chanter seule, centrée dans le bandeau ; le bandeau a son propre fond opaque, donc les mots verts ne sont jamais découpés par une incrustation sur fond vert). Les réglages (mode de chaque écran, fond vert, nombre de lignes) arrivent au lot 6.
 
 - **Noir** (ou F1) vide tous les écrans de sortie : le prompteur passe au noir, l'incrustation ne garde que son fond. Un second appui réaffiche.
 - Les aperçus en bas de la zone centrale montrent en temps réel ce qu'affiche chaque écran.
@@ -39,10 +41,14 @@ Par défaut, l'écran 1 est le **prompteur** (fond noir, gros caractères) et l'
 ## Dérouler une chanson
 
 1. Sélectionnez la chanson et cliquez sur « Charger » (ou double-cliquez dessus). Étape : « Chanson chargée ».
-2. « Afficher le titre » (facultatif), puis « Commencer » : la ligne 1 passe à l'antenne (surlignée en jaune), la suivante est repérée en pointillés.
+2. « Afficher le titre » (facultatif, apparaît en fondu), puis « Commencer » :
+   - si le titre était affiché, il disparaît en fondu et l'écran reste sans paroles pendant l'intro ; « Afficher la première ligne » (ou Espace) lance la ligne 1 ;
+   - sinon, la ligne 1 s'affiche directement.
+   La ligne à l'antenne est surlignée en jaune, la suivante repérée en pointillés. Sur le prompteur, les lignes défilent du bas vers le haut : la ligne à chanter au milieu, la suivante en dessous, plus petite et plus foncée.
 3. « Ligne suivante » / « Ligne précédente » en suivant le chant. Le passage à trou est encadré en violet, les mots à trouver restent lisibles pour l'opérateur.
 4. Le défilement s'arrête à la dernière ligne du passage à trou : la suite (saisie de la proposition) arrive au lot 4.
 5. « Annuler la dernière action » revient en arrière à tout moment.
+6. « Arrêter la chanson » ferme la chanson en cours et vide les écrans (confirmation si elle a commencé).
 
 Changer de chanson pendant qu'une chanson est en cours demande une confirmation.
 
@@ -54,7 +60,7 @@ Chaque raccourci a son bouton à l'écran. Les touches actives sont rappelées e
 |:---|:---|
 | Ligne suivante | Espace ou flèche droite |
 | Ligne précédente | Flèche gauche |
-| Commencer | Entrée |
+| Commencer, puis première ligne après l'intro | Entrée |
 | Chanson précédente / suivante (hors chanson en cours) | Flèche haut / bas |
 | Annuler la dernière action | Ctrl+Z |
 | Noir (second appui : réaffiche) | F1 |
