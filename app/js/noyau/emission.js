@@ -89,6 +89,16 @@
     em.suivi[id].etat = nouvelEtat;
   }
 
+  /** Résultat d'une chanson jouée : 'bonne', 'mauvaise' ou null. */
+  function definirResultat(em, id, resultat) {
+    em.suivi[id] = em.suivi[id] || { etat: 'a_venir', resultat: null };
+    em.suivi[id].resultat = resultat || null;
+  }
+
+  function resultat(em, id) {
+    return em.suivi[id] ? em.suivi[id].resultat : null;
+  }
+
   /** Nom d'un candidat à partir de son numéro (1 à 4). */
   function nomCandidat(em, numero) {
     return em.candidats[numero - 1] || 'Candidat ' + numero;
@@ -107,6 +117,8 @@
     voisine,
     etat,
     definirEtat,
+    definirResultat,
+    resultat,
     nomCandidat
   };
 })(typeof globalThis !== 'undefined' ? globalThis : window);
