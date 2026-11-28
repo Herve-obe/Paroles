@@ -156,7 +156,7 @@ describe('Lot 2 : une chanson tapée dans l\'éditeur se déroule à l\'écran',
     for (let i = 0; i < 5; i += 1) await page.keyboard.press('Space');
     assert.equal(await ligneAntenne(page), 3);
     assert.equal(await page.isDisabled('button[data-action="ligneSuivante"]'), true);
-    assert.equal(await page.isDisabled('button[data-action="saisir"]'), true, 'la saisie arrive au lot 4');
+    assert.equal(await page.isDisabled('button[data-action="saisir"]'), false, 'au passage à trou, la saisie est possible (lot 4)');
     assert.equal(await page.locator('.cadre-trou .ligne-op').count(), 2, 'le passage à trou est encadré');
   });
 

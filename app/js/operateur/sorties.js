@@ -50,7 +50,11 @@
         // chaque écran ne garde que celles de son mode.
         nbLignes: Math.max(prefs.nbLignes.prompteur, prefs.nbLignes.incrustation),
         ligneSuivante: prefs.ligneSuivante,
-        noir: app.noir
+        noir: app.noir,
+        accents: prefs.accents,
+        delaiCorrection: prefs.delaiCorrection,
+        textesStatut: prefs.textesStatut,
+        maintenant: Date.now()
       }),
       preferences: {
         ecrans: prefs.ecrans,

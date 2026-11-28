@@ -47,23 +47,52 @@
   /* Hauteur du bandeau d'incrustation selon le nombre de lignes affichées. */
   const HAUTEUR_BANDEAU = { 1: 140, 2: 210, 3: 270 };
 
+  /*
+   * Passage à trou, de la saisie à la révélation (lot 4) : toutes les lignes
+   * du trou ensemble, à la même taille, centrées ; le statut en dessous.
+   * PAS_TROU : écart entre deux lignes du trou ; RANG_STATUT : place du statut.
+   */
+  const PAS_TROU = { prompteur: 130, incrustation: 84 };
+  const RANG_STATUT = { prompteur: 140, incrustation: 84 };
+
   function div(classe) {
     const d = document.createElement('div');
     d.className = classe;
     return d;
   }
 
-  /** Remplit l'élément d'une ligne avec ses mots (masqués ou non). */
+  /**
+   * Signature d'une ligne : sert à ne la redessiner que si elle change.
+   * L'attente avant correction n'en fait pas partie : elle diminue à chaque
+   * message, et redessiner relancerait le délai d'un mot faux.
+   */
+  function signature(ligneAffichee) {
+    return JSON.stringify(ligneAffichee.mots.map((m) => [m.texte, m.masque, m.etat || '', m.correction || '']));
+  }
+
+  /** Un mot faux est remplacé par le bon mot, marqué comme correction (section 9.2). */
+  function corriger(span, mot) {
+    span.textContent = mot.correction;
+    span.classList.remove('etat-faux', 'masque');
+    span.classList.add('etat-correction');
+  }
+
+  /** Remplit l'élément d'une ligne avec ses mots (masqués ou non, colorés selon leur état). */
   function remplirLigne(element, ligneAffichee) {
     element.textContent = '';
     ligneAffichee.mots.forEach((mot) => {
       if (element.firstChild) element.appendChild(document.createTextNode(' '));
       const span = document.createElement('span');
-      span.className = 'mot' + (mot.masque ? ' masque' : '');
+      span.className = 'mot' + (mot.masque ? ' masque' : '') + (mot.etat ? ' etat-' + mot.etat : '');
       span.textContent = mot.texte;
       element.appendChild(span);
+      if (mot.etat === 'faux' && mot.correction) {
+        // Rouge d'abord, puis le bon mot après le délai (déjà écoulé : tout de suite).
+        if (mot.attente > 0) setTimeout(() => { if (span.isConnected) corriger(span, mot); }, mot.attente);
+        else corriger(span, mot);
+      }
     });
-    element.dataset.signature = JSON.stringify(ligneAffichee.mots);
+    element.dataset.signature = signature(ligneAffichee);
   }
 
   /**
@@ -102,9 +131,14 @@
     const cadre = div(mode === 'incrustation' ? 'cadre bandeau-incrustation' : 'cadre');
     const titre = div('calque calque-titre');
     const paroles = div('calque calque-paroles');
+    const statut = div('statut-sortie');
+    paroles.appendChild(statut);
     cadre.append(titre, paroles);
     scene.appendChild(cadre);
-    scene.etatRendu = { mode, cadre, titre, paroles, lignes: new Map(), cleTitre: null, minuteurTitre: null, minuteurParoles: null, dernierCourant: null };
+    scene.etatRendu = {
+      mode, cadre, titre, paroles, statut, lignes: new Map(), cleTitre: null, cleStatut: null,
+      minuteurTitre: null, minuteurParoles: null, minuteurStatut: null, dernierCourant: null
+    };
     return scene.etatRendu;
   }
 
@@ -149,8 +183,14 @@
           r.dernierCourant = null;
         }, duree * 1000 + 60);
       }
+      dessinerStatut(r, undefined, mode, 0);
       return;
     }
+    if (a.lignes.length && a.lignes[0].role === 'trou') {
+      dessinerTrou(r, a, mode, duree);
+      return;
+    }
+    dessinerStatut(r, undefined, mode, 0);
 
     clearTimeout(r.minuteurParoles);
     r.paroles.classList.add('visible');
@@ -188,14 +228,82 @@
         const depart = (monte ? g.pas[Math.min(rang + 1, dernierRang)] + g.entree : g.sortie) + decalage;
         placer(element, depart, g.echelle[place], 0, 0);
         void element.offsetWidth; // position de départ prise en compte avant le mouvement
-      } else if (element.dataset.signature !== JSON.stringify(ligne.mots)) {
+      } else if (element.dataset.signature !== signature(ligne)) {
+        remplirLigne(element, ligne);
+        ajusterTaille(element);
+      }
+      element.classList.remove('courante', 'suivante', 'trou');
+      element.classList.add(rang === 0 ? 'courante' : 'suivante');
+      placer(element, g.pas[place] + decalage, g.echelle[place], g.opacite[place], duree);
+    });
+  }
+
+  /**
+   * Passage à trou de la saisie à la révélation : toutes les lignes du trou
+   * ensemble, à la même taille, centrées (le bloc remonte s'il y a un statut).
+   */
+  function dessinerTrou(r, a, mode, duree) {
+    clearTimeout(r.minuteurParoles);
+    r.paroles.classList.add('visible');
+    const k = a.lignes.length;
+    const pas = PAS_TROU[mode];
+    const avecStatut = !!a.statut;
+    const decalage = avecStatut ? -RANG_STATUT[mode] / 2 : 0;
+    const affichees = new Set(a.lignes.map((l) => l.index));
+
+    r.lignes.forEach((element, index) => {
+      if (affichees.has(index)) return;
+      element.remove();
+      r.lignes.delete(index);
+    });
+
+    a.lignes.forEach((ligne, rang) => {
+      let element = r.lignes.get(ligne.index);
+      const y = (rang - (k - 1) / 2) * pas + decalage;
+      if (!element) {
+        element = div('ligne-paroles ligne-sortie ajustable');
+        element.dataset.index = String(ligne.index);
+        remplirLigne(element, ligne);
+        r.paroles.appendChild(element);
+        r.lignes.set(ligne.index, element);
+        ajusterTaille(element);
+        placer(element, y + GEOMETRIE[mode].entree, 1, 0, 0);
+        void element.offsetWidth;
+      } else if (element.dataset.signature !== signature(ligne)) {
         remplirLigne(element, ligne);
         ajusterTaille(element);
       }
       element.classList.remove('courante', 'suivante');
-      element.classList.add(rang === 0 ? 'courante' : 'suivante');
-      placer(element, g.pas[place] + decalage, g.echelle[place], g.opacite[place], duree);
+      element.classList.add('trou');
+      placer(element, y, 1, 1, duree);
     });
+    r.dernierCourant = a.lignes[0].index;
+
+    dessinerStatut(r, a.statut, mode, (k - 1) / 2 * pas + decalage + RANG_STATUT[mode]);
+  }
+
+  /**
+   * Statut « Bonne réponse » / « Mauvaise réponse » (section 9.3), affiché
+   * une fois le dernier mot faux corrigé (attente en millisecondes).
+   */
+  function dessinerStatut(r, statut, mode, y) {
+    if (!statut) {
+      clearTimeout(r.minuteurStatut);
+      r.statut.classList.remove('visible');
+      r.cleStatut = null;
+      return;
+    }
+    r.statut.style.transform = 'translateY(' + y + 'px)';
+    const cle = statut.type + '|' + statut.texte;
+    if (r.cleStatut === cle) return; // déjà affiché ou déjà programmé
+    r.cleStatut = cle;
+    clearTimeout(r.minuteurStatut);
+    r.statut.classList.remove('visible', 'bonne', 'mauvaise');
+    r.statut.classList.add(statut.type);
+    r.statut.textContent = statut.texte;
+    const montrer = () => r.statut.classList.add('visible');
+    if (statut.attente > 0) r.minuteurStatut = setTimeout(montrer, statut.attente);
+    else montrer();
   }
 
   /**
@@ -219,7 +327,18 @@
     scene.style.setProperty('--fondu-titre', fondu + 's');
     scene.style.setProperty('--fondu-paroles', duree + 's');
     const nombre = nombreDeLignes(prefs, mode);
-    if (mode === 'incrustation') r.cadre.style.height = (HAUTEUR_BANDEAU[nombre] || HAUTEUR_BANDEAU[1]) + 'px';
+    if (mode === 'incrustation') {
+      // Le bandeau s'agrandit le temps du jeu pour montrer toutes les lignes du trou (et le statut).
+      const surLeTrou = a.type === 'paroles' && a.lignes.length && a.lignes[0].role === 'trou';
+      const hauteur = surLeTrou
+        ? HAUTEUR_BANDEAU[1] + (a.lignes.length - 1) * PAS_TROU.incrustation + (a.statut ? RANG_STATUT.incrustation : 0)
+        : (HAUTEUR_BANDEAU[nombre] || HAUTEUR_BANDEAU[1]);
+      r.cadre.style.height = hauteur + 'px';
+    }
+    // Couleurs du jeu (réglables au lot 6).
+    if (prefs.couleurs) {
+      Object.keys(prefs.couleurs).forEach((nom) => scene.style.setProperty('--' + nom, prefs.couleurs[nom]));
+    }
 
     // « Noir » : coupure franche, sans fondu.
     scene.classList.toggle('noir', !!a.noir);
@@ -241,6 +360,7 @@
       Array.from(r.paroles.querySelectorAll('.ligne-sortie'))
         .sort((x, y) => Number(x.dataset.index) - Number(y.dataset.index))
         .forEach((l) => morceaux.push(l.textContent));
+      if (r.statut.classList.contains('visible')) morceaux.push(r.statut.textContent);
     }
     return morceaux.join(' ').replace(/\s+/g, ' ').trim();
   }

@@ -76,10 +76,10 @@
         <button type="button" id="btn-arreter" class="danger">Arrêter la chanson</button>
       </div>
 
-      <div class="cadre-a-venir">
-        <h3>Proposition du candidat</h3>
-        <p>Saisie, blocage et révélation : lot 4.</p>
-      </div>
+      <section class="bloc-proposition" aria-labelledby="titre-proposition">
+        <h3 id="titre-proposition">Proposition du candidat</h3>
+        <div class="zone-proposition" id="zone-proposition"></div>
+      </section>
       <div class="cadre-a-venir">
         <h3>Jokers</h3>
         <p>« 2 mots » et « 3 propositions » : lot 5.</p>
@@ -120,6 +120,7 @@
   <script src="js/operateur/editeur.js"></script>
   <script src="js/operateur/chanson-en-cours.js"></script>
   <script src="js/operateur/pilotage.js"></script>
+  <script src="js/operateur/proposition.js"></script>
   <script src="js/operateur/sorties.js"></script>
   <script src="js/operateur.js"></script>
 </body>

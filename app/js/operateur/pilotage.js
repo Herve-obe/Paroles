@@ -13,7 +13,10 @@
     chargee: 'Chanson chargée',
     intro: 'Intro (écran sans paroles)',
     defilement: 'Défilement',
-    trou: 'Passage à trou'
+    trou: 'Passage à trou',
+    saisie: 'Saisie de la proposition',
+    bloque: 'Proposition bloquée',
+    revele: 'Réponse révélée'
   };
 
   /** Boutons de chaque étape : action, libellé, style, raccourci affiché. */
@@ -37,7 +40,27 @@
       case 'trou':
         return [
           { action: 'ligneSuivante', libelle: 'Ligne suivante', style: 'principal' },
-          { action: 'saisir', libelle: 'Saisir la proposition', indisponible: 'Disponible au lot 4' },
+          { action: 'saisir', libelle: 'Saisir la proposition', style: 'principal', raccourci: 'etapeSuivante' },
+          { action: 'ligneSuivante', libelle: 'Ligne suivante', style: 'secondaire' },
+          { action: 'lignePrecedente', libelle: 'Ligne précédente', style: 'secondaire' }
+        ];
+      case 'saisie':
+        return [
+          { action: 'bloquer', libelle: 'Bloquer', style: 'principal' },
+          { action: 'joker2', libelle: 'Joker 2 mots', style: 'secondaire', indisponible: 'Disponible au lot 5' },
+          { action: 'joker3', libelle: 'Joker 3 propositions', style: 'secondaire', indisponible: 'Disponible au lot 5' }
+        ];
+      case 'bloque':
+        return [
+          { action: 'revelerSuivant', libelle: 'Révéler le mot suivant', style: 'principal' },
+          { action: 'toutReveler', libelle: 'Tout révéler' },
+          { action: 'debloquer', libelle: 'Débloquer', style: 'secondaire', raccourci: 'aucun' }
+        ];
+      case 'revele':
+        return [
+          { action: 'chansonSuivante', libelle: 'Chanson suivante', style: 'principal', raccourci: 'aucun', toujours: true },
+          { action: 'rejouer', libelle: 'Rejouer la chanson', style: 'secondaire', indisponible: 'Disponible au lot 5' },
+          { action: 'ligneSuivante', libelle: 'Ligne suivante', style: 'secondaire' },
           { action: 'lignePrecedente', libelle: 'Ligne précédente', style: 'secondaire' }
         ];
       default:
@@ -80,6 +103,8 @@
       if (b.indisponible) {
         bouton.disabled = true;
         bouton.title = b.indisponible;
+      } else if (b.toujours) {
+        bouton.disabled = false;
       } else {
         bouton.disabled = !P.jeu.possible(app.jeu, chanson, b.action);
       }
@@ -93,7 +118,11 @@
   function installer(app) {
     document.getElementById('boutons-etape').addEventListener('click', (e) => {
       const bouton = e.target.closest('button[data-action]');
-      if (bouton && !bouton.disabled) app.action(bouton.dataset.action);
+      if (!bouton || bouton.disabled) return;
+      const action = bouton.dataset.action;
+      if (action === 'debloquer') app.debloquer();
+      else if (action === 'chansonSuivante') app.chansonSuivante();
+      else app.action(action);
     });
     document.getElementById('btn-annuler').addEventListener('click', () => app.annuler());
     document.getElementById('btn-arreter').addEventListener('click', () => app.arreterChanson());

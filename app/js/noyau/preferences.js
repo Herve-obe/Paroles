@@ -19,6 +19,9 @@
       ligneSuivante: true,          // ligne suivante atténuée affichée
       fondIncrustation: '#000000',  // fond autour du bandeau : noir, vert ou couleur libre
       fondBandeau: '#14213d',       // fond opaque du bandeau d'incrustation (bleu nuit)
+      delaiCorrection: 1.5,         // délai avant qu'un mot faux soit remplacé par le bon mot, en secondes
+      accents: 'tolerant',          // comparaison des accents : 'tolerant' ou 'strict'
+      textesStatut: { bonne: 'Bonne réponse', mauvaise: 'Mauvaise réponse' },
       fonduTitre: 0.6,              // durée du fondu du titre, en secondes
       defilement: 0.35              // durée du défilement des lignes, en secondes (0 = affichage sec)
     };
