@@ -16,10 +16,10 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Récupération du dépôt
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
 
@@ -40,7 +40,7 @@ jobs:
           cp -r app LISEZMOI.md livraison/Paroles/
 
       - name: Dossier de l'application à télécharger
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Paroles-app-test
           path: livraison

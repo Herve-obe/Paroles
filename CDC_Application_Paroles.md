@@ -158,7 +158,7 @@ Une ligne après le trou (facultative)
 - **Défilement :** les paroles montent du bas vers le haut. Sur le prompteur, la ligne à chanter est au milieu de l'écran, la ligne suivante en dessous, plus petite et plus foncée ; dans le bandeau d'incrustation, seule la ligne à chanter est affichée, centrée verticalement dans le bandeau, et la nouvelle ligne arrive par le bas. La ligne qui vient d'être chantée n'est pas affichée, même pendant le mouvement : seules la ligne à chanter et (sur le prompteur) la ligne suivante sont visibles. Le mouvement démarre immédiatement et dure 0,35 s par défaut (réglable, 0 = affichage sec).
 - « Ligne suivante » (ou Espace) lance le passage à la ligne suivante immédiatement (moins de 50 ms entre le clic et le début du mouvement). Sur une chanson chargée, « Ligne suivante » équivaut à « Commencer ». Une touche maintenue enfoncée ne répète pas l'action.
 - Avant la révélation, le défilement s'arrête à la dernière ligne du passage à trou. S'il y a des lignes après le passage à trou, « Ligne suivante » redevient disponible une fois la réponse révélée, et les affiche normalement.
-- De la saisie à la révélation, les écrans de sortie montrent toutes les lignes du passage à trou ensemble, même si le réglage est sur 1 ligne, et ne montrent plus de ligne suivante.
+- De la saisie à la révélation, les écrans de sortie montrent toutes les lignes du passage à trou ensemble, même si le réglage est sur 1 ligne, et ne montrent plus de ligne suivante. Dans l'incrustation, le bandeau s'agrandit le temps du jeu pour les contenir (avec le statut), puis reprend sa taille.
 - Le prompteur montre 2 lignes par défaut : la ligne en cours bien visible, la suivante atténuée (réglable à 1 ou 3 lignes). L'incrustation montre la ligne en cours seule (réglable aussi).
 - « Ligne précédente » permet de corriger une erreur à tout moment.
 - Quand une ligne du passage à trou arrive, les mots à trouver sont remplacés par des `_` :
@@ -402,6 +402,20 @@ Réponses du formateur aux questions de l'étape 1, déjà reportées dans les s
 | 27 | Livraison | Une pull request par lot, fusionnée par le formateur, puis test sur son PC (0) |
 
 Précision ajoutée pendant le lot 1 : un signe de ponctuation isolé entre deux espaces n'est pas un mot (4.3).
+
+Lot 3 validé par le formateur le 28 novembre 2026 (version 0.3.2), avec cette réponse pour le lot 4 et cette demande nouvelle :
+
+- de la saisie à la révélation, l'incrustation montre toutes les lignes du passage à trou : le bandeau s'agrandit le temps du jeu, puis reprend sa taille (5) ;
+- demande du formateur en technique vidéo, acceptée : une sortie « découpe et remplissage » (key et fill) pour l'incrustation externe au mélangeur ; modalités à définir selon le matériel (carte Blackmagic DeckLink ou sorties de la carte graphique), voir `docs/etat-avancement.md`.
+
+Précisions ajoutées pendant le lot 4 :
+
+- « Saisir la proposition » est possible dès qu'une ligne du passage à trou est à l'antenne (6) ;
+- la suggestion « Juste » / « Faux » de chaque mot est montrée à l'opérateur à partir du blocage, avec un bouton de bascule par mot (9.1) ;
+- un mot juste révélé s'affiche avec son orthographe exacte (le bon mot), en vert (9.2) ;
+- le statut s'affiche quand le dernier mot faux a été remplacé par le bon mot (9.3) ;
+- après la révélation, « Ligne suivante » saute à la première ligne qui suit le trou ; « Chanson suivante » charge la chanson suivante de la conduite ; « Rejouer la chanson » arrive au lot 5 (3.3) ;
+- la conduite affiche le résultat d'une chanson jouée : « jouée · bonne réponse » ou « jouée · mauvaise réponse » (9.3, 10).
 
 Retours du formateur après l'essai de la version 0.3.1 (27 novembre 2026) :
 

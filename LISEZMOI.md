@@ -4,9 +4,9 @@ Application locale qui pilote l'affichage des paroles et du jeu depuis la régie
 
 La référence est le cahier des charges : [CDC_Application_Paroles.md](CDC_Application_Paroles.md).
 
-Version 0.3.2 · Édition du 27 novembre 2026. Le numéro de version est affiché en haut à gauche de l'écran opérateur ; l'historique est dans [docs/etat-avancement.md](docs/etat-avancement.md).
+Version 0.4.0 · Édition du 28 novembre 2026. Le numéro de version est affiché en haut à gauche de l'écran opérateur ; l'historique est dans [docs/etat-avancement.md](docs/etat-avancement.md).
 
-> **Version provisoire (lot 3 sur 7).** Disponible : la conduite, l'éditeur de chansons, l'import et l'export `.txt`, le défilement des lignes, les 2 écrans de sortie (prompteur et incrustation), « Noir ». À venir : saisie et révélation (lot 4), jokers (lot 5), préférences et sauvegarde (lot 6). **Rien n'est encore sauvegardé** : un rechargement de la page vide la conduite (la sauvegarde arrive au lot 6). Gardez vos chansons en fichiers `.txt` avec « Exporter la chanson ».
+> **Version provisoire (lot 4 sur 7).** Disponible : la conduite, l'éditeur de chansons, l'import et l'export `.txt`, le défilement des lignes, les 2 écrans de sortie (prompteur et incrustation), « Noir », la saisie de la proposition, le blocage, la révélation et le statut. À venir : jokers et « Rejouer la chanson » (lot 5), préférences et sauvegarde (lot 6). **Rien n'est encore sauvegardé** : un rechargement de la page vide la conduite (la sauvegarde arrive au lot 6). Gardez vos chansons en fichiers `.txt` avec « Exporter la chanson ».
 
 ## Lancer l'application
 
@@ -46,7 +46,12 @@ Par défaut, l'écran 1 est le **prompteur** (fond noir, gros caractères, la li
    - sinon, la ligne 1 s'affiche directement.
    La ligne à l'antenne est surlignée en jaune, la suivante repérée en pointillés. Sur le prompteur, les lignes défilent du bas vers le haut : la ligne à chanter au milieu, la suivante en dessous, plus petite et plus foncée.
 3. « Ligne suivante » / « Ligne précédente » en suivant le chant. Le passage à trou est encadré en violet, les mots à trouver restent lisibles pour l'opérateur.
-4. Le défilement s'arrête à la dernière ligne du passage à trou : la suite (saisie de la proposition) arrive au lot 4.
+4. Le défilement s'arrête à la dernière ligne du passage à trou. « Saisir la proposition » (ou Entrée) ouvre une case par mot à trouver, et toutes les lignes du trou s'affichent ensemble sur les écrans de sortie (dans l'incrustation, le bandeau s'agrandit le temps du jeu).
+   - Tapez un mot par case : Espace, Tab ou Entrée passe à la case suivante, Maj+Tab revient à la précédente. Chaque mot apparaît en jaune sur les écrans, lettre par lettre. Le candidat peut changer d'avis : tout se corrige jusqu'au blocage.
+   - « Bloquer » (ou Ctrl+Entrée ; Entrée seule ne bloque jamais) : la proposition passe en bleu. Les cases vides sont permises (elles compteront fausses). À côté de chaque case, la suggestion « Juste » ou « Faux » : un clic la bascule (faute de frappe, mot mal orthographié mais bien chanté). « Débloquer » (avec confirmation) est réservé aux erreurs.
+   - « Révéler le mot suivant » (R) révèle les mots un par un ; « Tout révéler » (Maj+R) d'un coup. Juste : le bon mot en vert. Faux ou case vide : en rouge, puis remplacé 1,5 s plus tard par le bon mot, en blanc sur fond rouge.
+   - Quand tout est révélé : « Bonne réponse » ou « Mauvaise réponse » s'affiche, et le résultat est inscrit dans la conduite (« jouée · bonne réponse »).
+   - Ensuite : « Ligne suivante » affiche la suite de la chanson s'il y en a, « Chanson suivante » charge la chanson suivante de la conduite (« Rejouer la chanson » arrive au lot 5).
 5. « Annuler la dernière action » revient en arrière à tout moment.
 6. « Arrêter la chanson » ferme la chanson en cours et vide les écrans (confirmation si elle a commencé).
 
@@ -60,7 +65,10 @@ Chaque raccourci a son bouton à l'écran. Les touches actives sont rappelées e
 |:---|:---|
 | Ligne suivante | Espace ou flèche droite |
 | Ligne précédente | Flèche gauche |
-| Commencer, puis première ligne après l'intro | Entrée |
+| Commencer, puis première ligne après l'intro, puis « Saisir la proposition » au passage à trou | Entrée |
+| Case suivante / précédente pendant la saisie | Espace, Tab ou Entrée / Maj+Tab |
+| Bloquer la proposition | Ctrl+Entrée |
+| Révéler le mot suivant / tout révéler | R / Maj+R |
 | Chanson précédente / suivante (hors chanson en cours) | Flèche haut / bas |
 | Annuler la dernière action | Ctrl+Z |
 | Noir (second appui : réaffiche) | F1 |
