@@ -16,7 +16,10 @@
   const PAR_DEFAUT = [
     { action: 'ligneSuivante', libelle: 'Ligne suivante', touches: ['Espace', 'Flèche droite'] },
     { action: 'lignePrecedente', libelle: 'Ligne précédente', touches: ['Flèche gauche'] },
-    { action: 'etapeSuivante', libelle: 'Étape suivante (commencer, première ligne)', touches: ['Entrée'] },
+    { action: 'etapeSuivante', libelle: 'Étape suivante (commencer, première ligne, saisir)', touches: ['Entrée'] },
+    { action: 'bloquer', libelle: 'Bloquer la proposition', touches: ['Ctrl+Entrée'] },
+    { action: 'revelerSuivant', libelle: 'Révéler le mot suivant', touches: ['R'] },
+    { action: 'toutReveler', libelle: 'Tout révéler', touches: ['Maj+R'] },
     { action: 'chansonPrecedente', libelle: 'Chanson précédente', touches: ['Flèche haut'] },
     { action: 'chansonSuivante', libelle: 'Chanson suivante', touches: ['Flèche bas'] },
     { action: 'annuler', libelle: 'Annuler la dernière action', touches: ['Ctrl+Z'] },
@@ -74,7 +77,7 @@
 
   /** Vrai si l'élément est une zone de saisie (les lettres y servent à taper). */
   function estChampDeSaisie(element) {
-    if (!element) return false;
+    if (!element || element.disabled) return false; // une case bloquée ne reçoit plus de frappe
     const balise = element.tagName;
     return balise === 'INPUT' || balise === 'TEXTAREA' || balise === 'SELECT' || element.isContentEditable;
   }

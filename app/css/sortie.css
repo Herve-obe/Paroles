@@ -48,6 +48,47 @@
   text-align: center;
 }
 .scene .mot.masque { letter-spacing: .16em; margin: 0 .2em; }
+
+/* Couleurs du jeu (section 11, réglables au lot 6) : proposé, bloqué, juste, faux, correction. */
+.scene {
+  --propose: #ffd60a;
+  --bloque: #3a8dff;
+  --juste: #2fbf5b;
+  --faux: #ef3b36;
+  --correction-texte: #ffffff;
+  --correction-fond: #ef3b36;
+}
+.scene .mot.etat-propose { color: var(--propose); }
+.scene .mot.etat-bloque { color: var(--bloque); }
+.scene .mot.etat-juste { color: var(--juste); }
+.scene .mot.etat-faux { color: var(--faux); }
+.scene .mot.etat-correction {
+  color: var(--correction-texte);
+  background: var(--correction-fond);
+  border-radius: .12em;
+  padding: 0 .12em;
+}
+
+/* Statut « Bonne réponse » / « Mauvaise réponse » (section 9.3). */
+.scene .statut-sortie {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: -.62em;
+  white-space: nowrap;
+  font-size: 72px;
+  line-height: 1.24;
+  padding: 0 .5em;
+  border-radius: .3em;
+  color: #ffffff;
+  opacity: 0;
+  translate: -50% 0;
+  transition: opacity .3s ease;
+}
+.scene .statut-sortie.visible { opacity: 1; }
+.scene .statut-sortie.bonne { background: var(--juste); }
+.scene .statut-sortie.mauvaise { background: var(--faux); }
+.scene[data-mode="incrustation"] .statut-sortie { font-size: 48px; }
 .scene .titre-sortie { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; }
 
 /* ---------- Prompteur : fond sombre, gros caractères, pour le candidat ---------- */
@@ -69,7 +110,7 @@
   border-radius: 22px;
   overflow: hidden;
   opacity: 0;
-  transition: opacity var(--fondu-titre, .6s) ease;
+  transition: opacity var(--fondu-titre, .6s) ease, height .35s ease-out;
 }
 .scene .bandeau-incrustation.visible { opacity: 1; }
 .scene[data-mode="incrustation"] .calque { left: 56px; right: 56px; }

@@ -38,7 +38,9 @@
       const etat = P.emission.etat(em, chanson.id);
       const badge = document.createElement('span');
       badge.className = 'etat etat-' + etat;
-      badge.textContent = P.emission.LIBELLES_ETAT[etat];
+      const resultat = P.emission.resultat(em, chanson.id);
+      badge.textContent = P.emission.LIBELLES_ETAT[etat] + (etat === 'jouee' && resultat ? ' · ' + (resultat === 'bonne' ? 'bonne réponse' : 'mauvaise réponse') : '');
+      if (etat === 'jouee' && resultat) badge.classList.add('resultat-' + resultat);
 
       const details = document.createElement('span');
       details.className = 'conduite-details';

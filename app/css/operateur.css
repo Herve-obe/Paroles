@@ -140,6 +140,25 @@ body.operateur { display: flex; flex-direction: column; height: 100vh; overflow:
 .etape-message { color: var(--texte-2); padding: 12px 0; }
 .actions-chanson { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
 .actions-chanson button { padding: 8px 6px; }
+/* Proposition du candidat : une case par mot à trouver (section 6) */
+.bloc-proposition { margin-top: 14px; padding: 10px 12px; border: 1px solid var(--bord); border-radius: var(--rayon); background: var(--panneau); }
+.bloc-proposition h3 { font-size: 14px; color: var(--texte-2); margin-bottom: 8px; }
+.aide-proposition { margin: 0; font-size: 13px; color: var(--texte-3); }
+.liste-cases { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.liste-cases li { display: grid; grid-template-columns: 52px 1fr auto; align-items: center; gap: 8px; }
+.numero-case { font-size: 12px; color: var(--texte-3); }
+.case-mot { font-size: 18px; padding: 6px 9px; min-width: 0; border-color: var(--bord); color: var(--propose); }
+.case-mot:disabled { color: var(--bloque); opacity: 1; background: var(--panneau-2); }
+.case-mot.revele:disabled { color: var(--texte); }
+.case-mot:focus { border-color: var(--propose); outline: none; box-shadow: 0 0 0 2px rgba(255, 214, 10, .35); }
+.bascule-mot { min-width: 70px; padding: 5px 8px; font-size: 13px; font-weight: 700; }
+.bascule-mot.juste { color: #0c2b16; background: var(--juste); border-color: var(--juste); }
+.bascule-mot.faux { color: #fff; background: var(--faux); border-color: var(--faux); }
+.bascule-mot.modifie { box-shadow: 0 0 0 2px var(--texte); }
+.bascule-mot[hidden] { display: none; }
+.etat.resultat-bonne { color: var(--juste); border-color: var(--juste); }
+.etat.resultat-mauvaise { color: var(--faux); border-color: var(--faux); }
+
 .cadre-a-venir { margin-top: 14px; padding: 10px 12px; border: 1px dashed var(--bord); border-radius: var(--rayon); color: var(--texte-3); }
 .cadre-a-venir h3 { font-size: 14px; color: var(--texte-2); }
 .cadre-a-venir p { margin: 4px 0 0; font-size: 13px; }
